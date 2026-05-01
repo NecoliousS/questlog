@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuestLog — RPG To-Do</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="scanlines"></div>
+  <div id="crt-curve"></div>
+
+  <div id="app">
+    <!-- ONBOARDING -->
+    <div id="view-onboarding" class="view">
+      <div class="panel onboarding-panel">
+        <h1 class="logo">QUEST LOG</h1>
+        <p class="subtitle">Choose Your Realm</p>
+        <div class="theme-grid">
+          <button class="theme-btn" data-theme="cyberpunk">
+            <span class="theme-name">CYBERPUNK</span>
+            <span class="theme-desc">Neon. Hacking. Future.</span>
+          </button>
+          <button class="theme-btn" data-theme="medieval">
+            <span class="theme-name">MEDIEVAL</span>
+            <span class="theme-desc">Swords. Magic. Quests.</span>
+          </button>
+          <button class="theme-btn" data-theme="pixel">
+            <span class="theme-name">PIXEL CLASSIC</span>
+            <span class="theme-desc">Retro. 8-Bit. Nostalgia.</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTH -->
+    <div id="view-auth" class="view hidden">
+      <div class="panel auth-panel">
+        <h2>ENTER THE REALM</h2>
+        <div id="auth-tabs">
+          <button class="auth-tab active" data-tab="login">LOGIN</button>
+          <button class="auth-tab" data-tab="register">REGISTER</button>
+        </div>
+        <div id="auth-login" class="auth-form">
+          <input type="email" id="login-email" placeholder="EMAIL" class="pixel-input">
+          <input type="password" id="login-password" placeholder="PASSWORD" class="pixel-input">
+          <button id="btn-login" class="pixel-btn primary">LOGIN</button>
+          <button id="btn-google" class="pixel-btn secondary">GOOGLE SIGN-IN</button>
+        </div>
+        <div id="auth-register" class="auth-form hidden">
+          <input type="text" id="reg-username" placeholder="USERNAME" class="pixel-input" maxlength="16">
+          <input type="email" id="reg-email" placeholder="EMAIL" class="pixel-input">
+          <input type="password" id="reg-password" placeholder="PASSWORD" class="pixel-input">
+          <button id="btn-register" class="pixel-btn primary">CREATE HERO</button>
+        </div>
+        <button id="btn-guest" class="pixel-btn ghost">PLAY AS GUEST</button>
+      </div>
+    </div>
+
+    <!-- CHARACTER CREATION -->
+    <div id="view-character-create" class="view hidden">
+      <div class="panel char-panel">
+        <h2>CREATE YOUR HERO</h2>
+        <div class="char-layout">
+          <div class="char-preview">
+            <div id="avatar-preview"></div>
+          </div>
+          <div class="char-options">
+            <label>NAME</label>
+            <input type="text" id="char-name" class="pixel-input" maxlength="12" value="Hero">
+
+            <label>GENDER</label>
+            <div class="option-row">
+              <button class="opt-btn" data-opt="gender" data-val="male">MALE</button>
+              <button class="opt-btn active" data-opt="gender" data-val="female">FEMALE</button>
+              <button class="opt-btn" data-opt="gender" data-val="other">OTHER</button>
+            </div>
+
+            <label>SKIN</label>
+            <div class="color-row" id="skin-colors"></div>
+
+            <label>HAIR STYLE</label>
+            <div class="option-row">
+              <button class="opt-btn active" data-opt="hairStyle" data-val="0">SHORT</button>
+              <button class="opt-btn" data-opt="hairStyle" data-val="1">LONG</button>
+              <button class="opt-btn" data-opt="hairStyle" data-val="2">SPIKY</button>
+            </div>
+
+            <label>HAIR COLOR</label>
+            <div class="color-row" id="hair-colors"></div>
+
+            <label>OUTFIT COLOR</label>
+            <div class="color-row" id="outfit-colors"></div>
+          </div>
+        </div>
+        <button id="btn-start-adventure" class="pixel-btn primary">START ADVENTURE</button>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="view-main" class="view hidden">
+      <!-- HEADER STATS -->
+      <header id="top-bar">
+        <div class="stat-group">
+          <span class="stat-label">LVL</span>
+          <span id="stat-level" class="stat-value">1</span>
+        </div>
+        <div class="bar-group">
+          <div class="pixel-bar hp">
+            <div class="bar-label">HP</div>
+            <div class="bar-track"><div id="bar-hp" class="bar-fill"></div></div>
+            <span id="val-hp">100/100</span>
+          </div>
+          <div class="pixel-bar mp">
+            <div class="bar-label">MP</div>
+            <div class="bar-track"><div id="bar-mp" class="bar-fill"></div></div>
+            <span id="val-mp">50/50</span>
+          </div>
+          <div class="pixel-bar exp">
+            <div class="bar-label">EXP</div>
+            <div class="bar-track"><div id="bar-exp" class="bar-fill"></div></div>
+            <span id="val-exp">0/100</span>
+          </div>
+        </div>
+        <div class="stat-group gold-group">
+          <span class="coin-icon">◆</span>
+          <span id="stat-gold" class="stat-value">0</span>
+        </div>
+        <div id="mini-avatar"></div>
+        <button id="btn-logout" class="pixel-btn small">EXIT</button>
+      </header>
+
+      <!-- NAV -->
+      <nav id="main-nav">
+        <a href="#dashboard" class="nav-btn active" data-view="dashboard">🏠 HOME</a>
+        <a href="#quests" class="nav-btn" data-view="quests">📜 QUESTS</a>
+        <a href="#practice" class="nav-btn" data-view="practice">📚 STUDY</a>
+        <a href="#battle" class="nav-btn" data-view="battle">⚔️ BATTLE</a>
+        <a href="#leaderboard" class="nav-btn" data-view="leaderboard">🏆 RANK</a>
+        <a href="#character" class="nav-btn" data-view="character">🎭 HERO</a>
+      </nav>
+
+      <!-- DASHBOARD -->
+      <div id="view-dashboard" class="main-view">
+        <div class="dashboard-grid">
+          <div class="panel">
+            <h3>DAILY STATUS</h3>
+            <div class="streak-box">
+              <span class="flame">🔥</span>
+              <span id="streak-count">0</span>
+              <span>DAY STREAK</span>
+            </div>
+            <div class="daily-progress">
+              <label>DAILY COMPLETION</label>
+              <div class="pixel-bar">
+                <div class="bar-track"><div id="daily-bar" class="bar-fill"></div></div>
+                <span id="daily-pct">0%</span>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>ACTIVE QUESTS</h3>
+            <div id="dash-quests" class="quest-mini-list"></div>
+          </div>
+          <div class="panel">
+            <h3>HERO STATS</h3>
+            <div class="hero-stats-grid">
+              <div class="hstat"><span>STR</span><span id="stat-str">5</span></div>
+              <div class="hstat"><span>INT</span><span id="stat-int">5</span></div>
+              <div class="hstat"><span>AGI</span><span id="stat-agi">5</span></div>
+              <div class="hstat"><span>DEF</span><span id="stat-def">5</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTS -->
+      <div id="view-quests" class="main-view hidden">
+        <div class="quest-controls">
+          <input type="text" id="quest-input" class="pixel-input" placeholder="Enter a task...">
+          <button id="btn-add-quest" class="pixel-btn primary">ADD QUEST</button>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-filter="all">ALL</button>
+          <button class="filter-btn" data-filter="active">ACTIVE</button>
+          <button class="filter-btn" data-filter="done">DONE</button>
+          <button class="filter-btn" data-filter="school">SCHOOL</button>
+          <button class="filter-btn" data-filter="work">WORK</button>
+          <button class="filter-btn" data-filter="health">HEALTH</button>
+        </div>
+        <div id="quest-list" class="quest-list"></div>
+      </div>
+
+      <!-- PRACTICE -->
+      <div id="view-practice" class="main-view hidden">
+        <div class="practice-setup">
+          <label>GRADE</label>
+          <div class="option-row">
+            <button class="opt-btn active" data-grade="5">5TH</button>
+            <button class="opt-btn" data-grade="6">6TH</button>
+            <button class="opt-btn" data-grade="7">7TH</button>
+            <button class="opt-btn" data-grade="8">8TH</button>
+            <button class="opt-btn" data-grade="9">9TH</button>
+            <button class="opt-btn" data-grade="10">10TH</button>
+            <button class="opt-btn" data-grade="11">11TH</button>
+            <button class="opt-btn" data-grade="12">12TH</button>
+          </div>
+          <label>SUBJECT</label>
+          <div class="option-row">
+            <button class="opt-btn active" data-subject="math">MATH</button>
+            <button class="opt-btn" data-subject="science">SCIENCE</button>
+            <button class="opt-btn" data-subject="english">ENGLISH</button>
+            <button class="opt-btn" data-subject="history">HISTORY</button>
+          </div>
+          <button id="btn-start-practice" class="pixel-btn primary">START TRAINING</button>
+        </div>
+        <div id="practice-area" class="hidden">
+          <div class="dialog-box">
+            <p id="practice-question"></p>
+          </div>
+          <div id="practice-options" class="practice-options"></div>
+          <input type="text" id="practice-answer" class="pixel-input hidden" placeholder="TYPE ANSWER...">
+          <button id="btn-submit-answer" class="pixel-btn primary hidden">SUBMIT</button>
+          <div class="streak-display">🔥 <span id="practice-streak">0</span></div>
+        </div>
+      </div>
+
+      <!-- BATTLE -->
+      <div id="view-battle" class="main-view hidden">
+        <div id="battle-screen">
+          <div class="battle-arena">
+            <div class="battle-hero">
+              <div id="battle-avatar"></div>
+              <div class="battle-name" id="battle-hero-name">HERO</div>
+              <div class="pixel-bar hp small"><div class="bar-track"><div id="battle-hp-bar" class="bar-fill"></div></div></div>
+            </div>
+            <div class="battle-vs">VS</div>
+            <div class="battle-enemy">
+              <div id="enemy-sprite"></div>
+              <div class="battle-name" id="enemy-name">SLIME</div>
+              <div class="pixel-bar hp small enemy"><div class="bar-track"><div id="enemy-hp-bar" class="bar-fill"></div></div></div>
+            </div>
+          </div>
+          <div id="battle-log" class="battle-log"></div>
+          <div id="battle-actions" class="battle-actions">
+            <button class="battle-btn" data-action="attack">⚔️ ATTACK</button>
+            <button class="battle-btn" data-action="magic">⭐ MAGIC</button>
+            <button class="battle-btn" data-action="defend">🛡️ DEFEND</button>
+            <button class="battle-btn" data-action="item">🧪 ITEM</button>
+            <button class="battle-btn" data-action="flee">👢 FLEE</button>
+          </div>
+          <div class="auto-battle">
+            <label><input type="checkbox" id="auto-battle"> AUTO-BATTLE</label>
+          </div>
+        </div>
+        <div id="battle-start" class="battle-start">
+          <p>NO ACTIVE ENCOUNTER</p>
+          <p class="small">Complete quests to trigger battles!</p>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div id="view-leaderboard" class="main-view hidden">
+        <div class="lb-tabs">
+          <button class="lb-tab active" data-lb="level">LEVEL</button>
+          <button class="lb-tab" data-lb="quests">QUESTS</button>
+          <button class="lb-tab" data-lb="gold">GOLD</button>
+          <button class="lb-tab" data-lb="streak">STREAK</button>
+        </div>
+        <div class="lb-time">
+          <button class="lb-time-btn active" data-time="all">ALL TIME</button>
+          <button class="lb-time-btn" data-time="month">MONTH</button>
+          <button class="lb-time-btn" data-time="week">WEEK</button>
+        </div>
+        <div class="panel">
+          <table class="pixel-table">
+            <thead>
+              <tr><th>RANK</th><th>HERO</th><th>LVL</th><th>SCORE</th></tr>
+            </thead>
+            <tbody id="lb-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CHARACTER -->
+      <div id="view-character" class="main-view hidden">
+        <div class="char-page">
+          <div class="panel">
+            <div id="char-big-avatar"></div>
+            <h3 id="char-display-name">HERO</h3>
+            <div class="char-big-stats">
+              <div class="big-stat"><span>LEVEL</span><span id="big-level">1</span></div>
+              <div class="big-stat"><span>EXP</span><span id="big-exp">0/100</span></div>
+              <div class="big-stat"><span>GOLD</span><span id="big-gold">0</span></div>
+              <div class="big-stat"><span>QUESTS</span><span id="big-quests">0</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>STATS</h3>
+            <div class="stat-bars">
+              <div class="stat-row"><span>STRENGTH</span><div class="pixel-bar"><div class="bar-track"><div id="bar-str" class="bar-fill"></div></div></div><span id="val-str">5</span></div>
+              <div class="stat-row"><span>INTELLIGENCE</span><div class="pixel-bar"><div class="bar-track"><div id="bar-int" class="bar-fill"></div></div></div><span id="val-int">5</span></div>
+              <div class="stat-row"><span>AGILITY</span><div class="pixel-bar"><div class="bar-track"><div id="bar-agi" class="bar-fill"></div></div></div><span id="val-agi">5</span></div>
+              <div class="stat-row"><span>DEFENSE</span><div class="pixel-bar"><div class="bar-track"><div id="bar-def" class="bar-fill"></div></div></div><span id="val-def">5</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>COSMETICS</h3>
+            <div id="cosmetic-shop" class="shop-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAYS -->
+  <div id="overlay-levelup" class="overlay hidden">
+    <div class="levelup-box">
+      <h1>LEVEL UP!</h1>
+      <p id="levelup-text">You reached Level 2!</p>
+      <div id="levelup-stats"></div>
+      <button class="pixel-btn primary" onclick="closeLevelUp()">AWESOME</button>
+    </div>
+  </div>
+
+  <div id="overlay-battle" class="overlay hidden">
+    <div class="battle-flash"></div>
+  </div>
+
+  <div id="overlay-toast" class="toast hidden"></div>
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    window.fbApp = app;
+    window.fbAuth = auth;
+    window.fbDb = db;
+    window.fbGoogle = googleProvider;
+    window.fb = { auth, db, googleProvider, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged };
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>
