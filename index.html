@@ -12,7 +12,6 @@
   <div id="crt-curve"></div>
 
   <div id="app">
-    <!-- ONBOARDING -->
     <div id="view-onboarding" class="view">
       <div class="panel onboarding-panel">
         <h1 class="logo">QUEST LOG</h1>
@@ -30,7 +29,6 @@
       </div>
     </div>
 
-    <!-- AUTH -->
     <div id="view-auth" class="view hidden">
       <div class="panel auth-panel">
         <h2>ENTER THE REALM</h2>
@@ -54,38 +52,30 @@
       </div>
     </div>
 
-    <!-- CHARACTER CREATION -->
     <div id="view-character-create" class="view hidden">
       <div class="panel char-panel">
         <h2>CREATE YOUR HERO</h2>
         <div class="char-layout">
-          <div class="char-preview">
-            <div id="avatar-preview"></div>
-          </div>
+          <div class="char-preview"><div id="avatar-preview"></div></div>
           <div class="char-options">
             <label>NAME</label>
             <input type="text" id="char-name" class="pixel-input" maxlength="12" value="Hero">
-
             <label>GENDER</label>
             <div class="option-row">
               <button class="opt-btn" data-opt="gender" data-val="male">MALE</button>
               <button class="opt-btn active" data-opt="gender" data-val="female">FEMALE</button>
               <button class="opt-btn" data-opt="gender" data-val="other">OTHER</button>
             </div>
-
             <label>SKIN</label>
             <div class="color-row" id="skin-colors"></div>
-
             <label>HAIR STYLE</label>
             <div class="option-row">
               <button class="opt-btn active" data-opt="hairStyle" data-val="0">SHORT</button>
               <button class="opt-btn" data-opt="hairStyle" data-val="1">LONG</button>
               <button class="opt-btn" data-opt="hairStyle" data-val="2">SPIKY</button>
             </div>
-
             <label>HAIR COLOR</label>
             <div class="color-row" id="hair-colors"></div>
-
             <label>OUTFIT COLOR</label>
             <div class="color-row" id="outfit-colors"></div>
           </div>
@@ -94,9 +84,7 @@
       </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="view-main" class="view hidden">
-      <!-- HEADER STATS -->
       <header id="top-bar">
         <div class="stat-group">
           <span class="stat-label">LVL</span>
@@ -127,7 +115,6 @@
         <button id="btn-logout" class="pixel-btn small">EXIT</button>
       </header>
 
-      <!-- NAV -->
       <nav id="main-nav">
         <a href="#dashboard" class="nav-btn active" data-view="dashboard">🏠 HOME</a>
         <a href="#quests" class="nav-btn" data-view="quests">📜 QUESTS</a>
@@ -137,7 +124,6 @@
         <a href="#character" class="nav-btn" data-view="character">🎭 HERO</a>
       </nav>
 
-      <!-- DASHBOARD -->
       <div id="view-dashboard" class="main-view">
         <div class="dashboard-grid">
           <div class="panel">
@@ -171,7 +157,6 @@
         </div>
       </div>
 
-      <!-- QUESTS -->
       <div id="view-quests" class="main-view hidden">
         <div class="quest-controls">
           <input type="text" id="quest-input" class="pixel-input" placeholder="Enter a task...">
@@ -188,7 +173,6 @@
         <div id="quest-list" class="quest-list"></div>
       </div>
 
-      <!-- PRACTICE -->
       <div id="view-practice" class="main-view hidden">
         <div class="practice-setup" id="practice-setup">
           <label>GRADE</label>
@@ -212,9 +196,7 @@
           <button id="btn-start-practice" class="pixel-btn primary">START TRAINING</button>
         </div>
         <div id="practice-area" class="hidden">
-          <div class="dialog-box">
-            <p id="practice-question"></p>
-          </div>
+          <div class="dialog-box"><p id="practice-question"></p></div>
           <div id="practice-options" class="practice-options"></div>
           <input type="text" id="practice-answer" class="pixel-input hidden" placeholder="TYPE ANSWER...">
           <button id="btn-submit-answer" class="pixel-btn primary hidden">SUBMIT</button>
@@ -222,7 +204,6 @@
         </div>
       </div>
 
-      <!-- BATTLE -->
       <div id="view-battle" class="main-view hidden">
         <div id="battle-screen">
           <div class="battle-arena">
@@ -256,7 +237,6 @@
         </div>
       </div>
 
-      <!-- LEADERBOARD -->
       <div id="view-leaderboard" class="main-view hidden">
         <div class="lb-tabs">
           <button class="lb-tab active" data-lb="level">LEVEL</button>
@@ -271,15 +251,12 @@
         </div>
         <div class="panel">
           <table class="pixel-table">
-            <thead>
-              <tr><th>RANK</th><th>HERO</th><th>LVL</th><th>SCORE</th></tr>
-            </thead>
+            <thead><tr><th>RANK</th><th>HERO</th><th>LVL</th><th>SCORE</th></tr></thead>
             <tbody id="lb-body"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- CHARACTER -->
       <div id="view-character" class="main-view hidden">
         <div class="char-page">
           <div class="panel">
@@ -310,7 +287,6 @@
     </div>
   </div>
 
-  <!-- OVERLAYS -->
   <div id="overlay-levelup" class="overlay hidden">
     <div class="levelup-box">
       <h1>LEVEL UP!</h1>
@@ -326,19 +302,19 @@
 
   <div id="overlay-toast" class="toast hidden"></div>
 
-  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBbm6xcaA11CR5zSCSZPcb24WLQoDZc9Cc",
+      authDomain: "questlog-rpg-52202.firebaseapp.com",
+      projectId: "questlog-rpg-52202",
+      storageBucket: "questlog-rpg-52202.firebasestorage.app",
+      messagingSenderId: "863098718054",
+      appId: "1:863098718054:web:3bc5744100d135ec116aa7",
+      measurementId: "G-8SNVMG6457"
     };
 
     const app = initializeApp(firebaseConfig);
