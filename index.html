@@ -13,7 +13,7 @@
 
   <div id="app">
 
-    <!-- VIEW: LANDING / GOOGLE SIGN IN -->
+    <!-- LANDING -->
     <div id="view-landing" class="view">
       <div class="panel landing-panel">
         <h1 class="logo">QUEST LOG</h1>
@@ -25,7 +25,6 @@
           <p class="or-divider">— OR —</p>
           <button id="btn-email-toggle" class="pixel-btn secondary">USE EMAIL / PASSWORD</button>
         </div>
-        
         <div id="email-form" class="hidden" style="margin-top:20px;">
           <div id="email-tabs">
             <button class="auth-tab active" data-etab="login">LOGIN</button>
@@ -42,13 +41,12 @@
             <button id="btn-email-register" class="pixel-btn primary">CREATE ACCOUNT</button>
           </div>
         </div>
-        
         <button id="btn-guest" class="pixel-btn ghost" style="margin-top:20px;">PLAY AS GUEST</button>
         <p class="guest-note">Guest data is saved locally only.</p>
       </div>
     </div>
 
-    <!-- VIEW: USERNAME SETUP -->
+    <!-- USERNAME -->
     <div id="view-username" class="view hidden">
       <div class="panel username-panel">
         <h2>CHOOSE YOUR HERO NAME</h2>
@@ -65,7 +63,7 @@
       </div>
     </div>
 
-    <!-- VIEW: THEME SELECT -->
+    <!-- THEME -->
     <div id="view-theme" class="view hidden">
       <div class="panel theme-panel">
         <h2>CHOOSE YOUR REALM</h2>
@@ -86,7 +84,7 @@
       </div>
     </div>
 
-    <!-- VIEW: CHARACTER CREATE -->
+    <!-- CHARACTER -->
     <div id="view-character" class="view hidden">
       <div class="panel char-panel">
         <h2>CREATE YOUR HERO</h2>
@@ -119,7 +117,7 @@
       </div>
     </div>
 
-    <!-- VIEW: MAIN APP -->
+    <!-- MAIN APP -->
     <div id="view-main" class="view hidden">
       <header id="top-bar">
         <div class="stat-group">
@@ -209,28 +207,48 @@
         <div id="quest-list" class="quest-list"></div>
       </div>
 
+      <!-- PRACTICE: PRESET + CUSTOM -->
       <div id="view-practice" class="main-view hidden">
-        <div class="practice-setup" id="practice-setup">
-          <label>GRADE</label>
-          <div class="option-row">
-            <button class="opt-btn active" data-grade="5">5TH</button>
-            <button class="opt-btn" data-grade="6">6TH</button>
-            <button class="opt-btn" data-grade="7">7TH</button>
-            <button class="opt-btn" data-grade="8">8TH</button>
-            <button class="opt-btn" data-grade="9">9TH</button>
-            <button class="opt-btn" data-grade="10">10TH</button>
-            <button class="opt-btn" data-grade="11">11TH</button>
-            <button class="opt-btn" data-grade="12">12TH</button>
-          </div>
-          <label>SUBJECT</label>
-          <div class="option-row">
-            <button class="opt-btn active" data-subject="math">MATH</button>
-            <button class="opt-btn" data-subject="science">SCIENCE</button>
-            <button class="opt-btn" data-subject="english">ENGLISH</button>
-            <button class="opt-btn" data-subject="history">HISTORY</button>
-          </div>
-          <button id="btn-start-practice" class="pixel-btn primary">START TRAINING</button>
+        <div class="practice-tabs">
+          <button class="practice-tab active" data-ptab="preset">PRESET TRIALS</button>
+          <button class="practice-tab" data-ptab="custom">MY NOTES</button>
         </div>
+
+        <div id="practice-preset">
+          <div class="practice-setup" id="practice-setup">
+            <label>GRADE</label>
+            <div class="option-row">
+              <button class="opt-btn active" data-grade="5">5TH</button>
+              <button class="opt-btn" data-grade="6">6TH</button>
+              <button class="opt-btn" data-grade="7">7TH</button>
+              <button class="opt-btn" data-grade="8">8TH</button>
+              <button class="opt-btn" data-grade="9">9TH</button>
+              <button class="opt-btn" data-grade="10">10TH</button>
+              <button class="opt-btn" data-grade="11">11TH</button>
+              <button class="opt-btn" data-grade="12">12TH</button>
+            </div>
+            <label>SUBJECT</label>
+            <div class="option-row">
+              <button class="opt-btn active" data-subject="math">MATH</button>
+              <button class="opt-btn" data-subject="science">SCIENCE</button>
+              <button class="opt-btn" data-subject="english">ENGLISH</button>
+              <button class="opt-btn" data-subject="history">HISTORY</button>
+            </div>
+            <button id="btn-start-practice" class="pixel-btn primary">START TRAINING</button>
+          </div>
+        </div>
+
+        <div id="practice-custom" class="hidden">
+          <div class="custom-study-panel">
+            <label>PASTE YOUR NOTES</label>
+            <textarea id="study-text" class="pixel-textarea" rows="6" placeholder="Paste study notes here..."></textarea>
+            <label>OR UPLOAD A FILE</label>
+            <input type="file" id="study-file" class="pixel-input" accept=".txt,.md">
+            <button id="btn-generate-custom" class="pixel-btn primary">GENERATE TRIAL</button>
+            <p class="custom-note">The app will create fill-in-the-blank questions from your text.</p>
+          </div>
+        </div>
+
         <div id="practice-area" class="hidden">
           <div class="dialog-box"><p id="practice-question"></p></div>
           <div id="practice-options" class="practice-options"></div>
@@ -339,7 +357,6 @@
 
   <div id="overlay-toast" class="toast hidden"></div>
 
-  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
