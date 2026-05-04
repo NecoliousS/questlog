@@ -1,5 +1,6 @@
 /* ============================================
-   QUEST LOG — RPG TO-DO APP (COMPLETE REWRITE)
+   QUEST LOG — RPG TO-DO APP (v2)
+   Upload notes, generate quizzes, refined art
    ============================================ */
 
 const THEMES = {
@@ -12,8 +13,8 @@ const THEMES = {
     },
     questNames: {
       high: ['Hack the {subject} Mainframe','Execute {subject} Protocol','Debug {subject} System','Override {subject} Firewall'],
-      medium: ['Optimize {subject} Subroutine','Patch {subject} Module','Scan {subject} Network','Calibrate {subject} Sensors'],
-      low: ['Run {subject} Cleanup','Recycle {subject} Data','Reboot {subject} Process','Flush {subject} Cache']
+      medium: ['Optimize {subject} Subroutine','Patch {subject} Module','Scan {subject} Network'],
+      low: ['Run {subject} Cleanup','Recycle {subject} Data','Reboot {subject} Process']
     }
   },
   medieval: {
@@ -24,9 +25,9 @@ const THEMES = {
       low: ['trash','dishes','laundry','room','walk','water','bed','shower','eat','call']
     },
     questNames: {
-      high: ['Slay the {subject} Dragon','Conquer the {subject} Citadel','Defeat the {subject} Necromancer','Retrieve the {subject} Grail'],
-      medium: ['Train at the {subject} Dojo','Forage for {subject} Herbs','Patrol the {subject} Border','Craft {subject} Armor'],
-      low: ['Purify the {subject} Chamber','Dispose of Goblin {subject}','Polish the {subject} Shield','Feed the {subject} Horses']
+      high: ['Slay the {subject} Dragon','Conquer the {subject} Citadel','Defeat the {subject} Necromancer'],
+      medium: ['Train at the {subject} Dojo','Forage for {subject} Herbs','Patrol the {subject} Border'],
+      low: ['Purify the {subject} Chamber','Dispose of Goblin {subject}','Polish the {subject} Shield']
     }
   },
   pixel: {
@@ -37,9 +38,9 @@ const THEMES = {
       low: ['trash','dishes','laundry','room','walk','water','bed','shower','eat','call']
     },
     questNames: {
-      high: ['{subject} Boss Battle','Final {subject} Dungeon','{subject} Castle Siege','Legendary {subject} Quest'],
-      medium: ['{subject} Side Quest','{subject} Training Ground','{subject} Item Hunt','{subject} Patrol'],
-      low: ['{subject} Cleanup','{subject} Errand','{subject} Delivery','Tidy {subject} Room']
+      high: ['{subject} Boss Battle','Final {subject} Dungeon','{subject} Castle Siege'],
+      medium: ['{subject} Side Quest','{subject} Training Ground','{subject} Item Hunt'],
+      low: ['{subject} Cleanup','{subject} Errand','Tidy {subject} Room']
     }
   }
 };
@@ -58,12 +59,14 @@ const CATEGORIES = {
   personal: { label: 'PERSONAL', color: 'badge-personal', keywords: ['call','text','friend','family','read','game','movie','hobby'] }
 };
 
-const BANNED_NAMES = ['admin','moderator','support','official','questlog','system','root','owner','staff','developer','dev','mod','owner','administrator','gm','game master'];
+const BANNED_NAMES = ['admin','moderator','support','official','questlog','system','root','owner','staff','developer','dev','mod','administrator','gm','game','master'];
 const PROFANITY_LIST = ['fuck','shit','bitch','asshole','damn','cunt','nigger','fag','retard','slut','whore','dick','cock','pussy','nigga'];
 
 const SKIN_COLORS = ['#ffdbac','#f1c27d','#e0ac69','#8d5524','#c68642','#5c3a21'];
-const HAIR_COLORS = ['#090806','#2c222b','#71635a','#b7a69e','#d6c4c2','#cabfb1','#dcd0ba','#fff5e1','#e6cea8','#e5c8a8','#a56b46','#91553d','#533d32','#3b3024','#554838','#4e433f','#504444','#6a4e42','#a7856a','#b55239','#8d4a43','#91553d','#533d32','#3b3024'];
+const HAIR_COLORS = ['#090806','#2c222b','#71635a','#b7a69e','#d6c4c2','#cabfb1','#dcd0ba','#fff5e1','#e6cea8','#a56b46','#91553d','#533d32','#3b3024','#554838','#4e433f','#504444','#6a4e42','#a7856a','#b55239','#8d4a43'];
 const OUTFIT_COLORS = ['#cc0000','#00cc00','#0000cc','#cccc00','#cc00cc','#00cccc','#ff6600','#666666','#333333','#ffffff','#ff4444','#44ff44','#4444ff','#ffff44'];
+
+const COMMON_WORDS = new Set(['the','a','an','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','must','shall','can','need','dare','ought','used','to','of','in','for','on','with','at','by','from','as','into','through','during','before','after','above','below','between','under','and','but','or','yet','so','if','because','although','though','while','where','when','that','which','who','whom','whose','what','this','these','those','i','you','he','she','it','we','they','me','him','her','us','them','my','your','his','its','our','their','mine','yours','hers','ours','theirs','myself','yourself','himself','herself','itself','ourselves','yourselves','themselves','it','s','t','just','don','now','ll','m','re','ve','d','than','then','also','only','even','back','after','use','two','how','our','work','first','well','way','many','make','than','them','write','would','like','so','these','her','long','make','thing','see','him','two','has','look','more','day','could','go','come','did','number','sound','no','most','people','my','over','know','water','call','who','oil','its','now','find','was','not','up','get','through','back','much','go','good','new','man','too','any','day','same','right','look','think','also','around','another','came','come','work','three','must','because','does','part','even','place','made','live','where','after','little','round','every','under','very','when','great','say','help','low','line','before','turn','cause','same','mean','differ','move','try','kind','hand','picture','again','change','off','play','spell','air','away','animal','house','point','page','letter','mother','answer','found','study','still','learn','should','america','world']);
 
 const PRACTICE_QUESTIONS = {
   5: {
@@ -269,11 +272,10 @@ let state = {
   cosmetics: [],
   equipped: {},
   battle: null,
-  practice: { grade: 5, subject: 'math', streak: 0, current: null },
+  practice: { grade: 5, subject: 'math', streak: 0, current: null, mode: 'preset', customQuestions: [], customIndex: 0 },
   filter: 'all',
   lbFilter: 'level',
-  lbTime: 'all',
-  pendingGoogleUser: null
+  lbTime: 'all'
 };
 
 function $(sel) { return document.querySelector(sel); }
@@ -315,9 +317,7 @@ function loadLocal() {
   } catch(e) { return false; }
 }
 
-function clearLocal() {
-  localStorage.removeItem('questlog_data');
-}
+function clearLocal() { localStorage.removeItem('questlog_data'); }
 
 function showView(id) {
   $$('.view').forEach(v => v.classList.add('hidden'));
@@ -327,7 +327,7 @@ function showView(id) {
 
 function showMainView(id) {
   $$('.main-view').forEach(v => v.classList.add('hidden'));
-  const el = document.getElementById('view-' + id);
+  const el = $('#view-' + id);
   if (el) el.classList.remove('hidden');
   $$('.nav-btn').forEach(n => n.classList.remove('active'));
   const nav = $(`.nav-btn[data-view="${id}"]`);
@@ -365,15 +365,15 @@ function isValidUsername(name) {
   return null;
 }
 
-/* ================= AVATAR ================= */
+/* ================= AVATAR (REFINED 16x20) ================= */
 
-function buildAvatarGrid(container, size = 8) {
+function buildAvatarGrid(container, cols, rows, size) {
   container.innerHTML = '';
   const grid = document.createElement('div');
   grid.className = 'pixel-avatar';
-  grid.style.gridTemplateColumns = `repeat(12, ${size}px)`;
-  grid.style.gridTemplateRows = `repeat(16, ${size}px)`;
-  for (let i = 0; i < 192; i++) {
+  grid.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
+  grid.style.gridTemplateRows = `repeat(${rows}, ${size}px)`;
+  for (let i = 0; i < cols * rows; i++) {
     const cell = document.createElement('div');
     cell.className = 'px';
     cell.style.width = size + 'px';
@@ -381,164 +381,155 @@ function buildAvatarGrid(container, size = 8) {
     grid.appendChild(cell);
   }
   container.appendChild(grid);
-  return grid;
+  return { grid, cells: grid.querySelectorAll('.px') };
 }
 
-function renderAvatar(container, char, size = 8) {
-  const grid = buildAvatarGrid(container, size);
-  const cells = grid.querySelectorAll('.px');
+function renderAvatar(container, char, cols, rows, size) {
+  const { cells } = buildAvatarGrid(container, cols, rows, size);
   const c = char || state.character || { skin: SKIN_COLORS[0], hairColor: HAIR_COLORS[0], hairStyle: 0, outfit: OUTFIT_COLORS[0], gender: 'female' };
-  
   const skin = c.skin;
   const hair = c.hairColor;
   const outfit = c.outfit;
   const hairStyle = parseInt(c.hairStyle || 0);
-  
+  const idx = (x, y) => y * cols + x;
   const empty = 'transparent';
-  
-  // 12x16 grid index helper
-  const idx = (x, y) => y * 12 + x;
-  
-  // Clear
+
   cells.forEach(cell => cell.style.backgroundColor = empty);
-  
-  // HEAD (rows 1-5)
-  for (let y = 1; y <= 5; y++) {
-    for (let x = 3; x <= 8; x++) {
-      cells[idx(x, y)].style.backgroundColor = skin;
-    }
+
+  // HEAD (rows 2-7, cols 4-11)
+  for (let y = 2; y <= 7; y++) {
+    for (let x = 4; x <= 11; x++) cells[idx(x, y)].style.backgroundColor = skin;
   }
-  
+
   // HAIR
   if (hairStyle === 0) { // Short
-    for (let x = 3; x <= 8; x++) { cells[idx(x, 0)].style.backgroundColor = hair; cells[idx(x, 1)].style.backgroundColor = hair; }
-    cells[idx(2, 1)].style.backgroundColor = hair; cells[idx(9, 1)].style.backgroundColor = hair;
-    cells[idx(2, 2)].style.backgroundColor = hair; cells[idx(9, 2)].style.backgroundColor = hair;
+    for (let x = 3; x <= 12; x++) { cells[idx(x, 1)].style.backgroundColor = hair; cells[idx(x, 2)].style.backgroundColor = hair; }
+    cells[idx(3, 3)].style.backgroundColor = hair; cells[idx(12, 3)].style.backgroundColor = hair;
   } else if (hairStyle === 1) { // Long
-    for (let x = 2; x <= 9; x++) { cells[idx(x, 0)].style.backgroundColor = hair; cells[idx(x, 1)].style.backgroundColor = hair; }
-    for (let y = 2; y <= 6; y++) { cells[idx(2, y)].style.backgroundColor = hair; cells[idx(9, y)].style.backgroundColor = hair; }
-    cells[idx(1, 3)].style.backgroundColor = hair; cells[idx(10, 3)].style.backgroundColor = hair;
+    for (let x = 3; x <= 12; x++) { cells[idx(x, 0)].style.backgroundColor = hair; cells[idx(x, 1)].style.backgroundColor = hair; cells[idx(x, 2)].style.backgroundColor = hair; }
+    for (let y = 3; y <= 8; y++) { cells[idx(3, y)].style.backgroundColor = hair; cells[idx(12, y)].style.backgroundColor = hair; }
+    cells[idx(2, 4)].style.backgroundColor = hair; cells[idx(13, 4)].style.backgroundColor = hair;
   } else { // Spiky
-    for (let x = 3; x <= 8; x++) cells[idx(x, 1)].style.backgroundColor = hair;
-    cells[idx(2, 0)].style.backgroundColor = hair; cells[idx(4, 0)].style.backgroundColor = hair;
-    cells[idx(6, 0)].style.backgroundColor = hair; cells[idx(8, 0)].style.backgroundColor = hair;
-    cells[idx(9, 0)].style.backgroundColor = hair; cells[idx(3, 0)].style.backgroundColor = hair;
-    cells[idx(5, 0)].style.backgroundColor = hair; cells[idx(7, 0)].style.backgroundColor = hair;
-    cells[idx(9, 1)].style.backgroundColor = hair; cells[idx(2, 1)].style.backgroundColor = hair;
+    for (let x = 4; x <= 11; x++) cells[idx(x, 1)].style.backgroundColor = hair;
+    cells[idx(3, 0)].style.backgroundColor = hair; cells[idx(5, 0)].style.backgroundColor = hair; cells[idx(7, 0)].style.backgroundColor = hair;
+    cells[idx(9, 0)].style.backgroundColor = hair; cells[idx(11, 0)].style.backgroundColor = hair; cells[idx(12, 0)].style.backgroundColor = hair;
+    cells[idx(4, 0)].style.backgroundColor = hair; cells[idx(6, 0)].style.backgroundColor = hair; cells[idx(8, 0)].style.backgroundColor = hair;
+    cells[idx(10, 0)].style.backgroundColor = hair; cells[idx(3, 1)].style.backgroundColor = hair; cells[idx(12, 1)].style.backgroundColor = hair;
   }
-  
+
   // EYES
-  cells[idx(4, 3)].style.backgroundColor = '#000';
-  cells[idx(7, 3)].style.backgroundColor = '#000';
-  
-  // BODY / OUTFIT (rows 6-11)
-  for (let y = 6; y <= 11; y++) {
-    for (let x = 3; x <= 8; x++) {
-      cells[idx(x, y)].style.backgroundColor = outfit;
-    }
+  cells[idx(6, 5)].style.backgroundColor = '#000';
+  cells[idx(9, 5)].style.backgroundColor = '#000';
+
+  // BODY / OUTFIT (rows 8-14, cols 4-11)
+  for (let y = 8; y <= 14; y++) {
+    for (let x = 4; x <= 11; x++) cells[idx(x, y)].style.backgroundColor = outfit;
   }
   // Arms
-  for (let y = 7; y <= 9; y++) {
-    cells[idx(2, y)].style.backgroundColor = skin;
-    cells[idx(9, y)].style.backgroundColor = skin;
+  for (let y = 9; y <= 12; y++) {
+    cells[idx(2, y)].style.backgroundColor = skin; cells[idx(3, y)].style.backgroundColor = skin;
+    cells[idx(12, y)].style.backgroundColor = skin; cells[idx(13, y)].style.backgroundColor = skin;
   }
-  
-  // LEGS (rows 12-15)
-  for (let y = 12; y <= 15; y++) {
-    cells[idx(4, y)].style.backgroundColor = skin;
-    cells[idx(5, y)].style.backgroundColor = skin;
-    cells[idx(6, y)].style.backgroundColor = skin;
-    cells[idx(7, y)].style.backgroundColor = skin;
+
+  // LEGS (rows 15-19)
+  for (let y = 15; y <= 19; y++) {
+    cells[idx(5, y)].style.backgroundColor = skin; cells[idx(6, y)].style.backgroundColor = skin;
+    cells[idx(9, y)].style.backgroundColor = skin; cells[idx(10, y)].style.backgroundColor = skin;
   }
   // Shoes
-  cells[idx(4, 15)].style.backgroundColor = '#333';
-  cells[idx(5, 15)].style.backgroundColor = '#333';
-  cells[idx(6, 15)].style.backgroundColor = '#333';
-  cells[idx(7, 15)].style.backgroundColor = '#333';
-  
+  for (let x = 5; x <= 6; x++) cells[idx(x, 19)].style.backgroundColor = '#222';
+  for (let x = 9; x <= 10; x++) cells[idx(x, 19)].style.backgroundColor = '#222';
+
   // EQUIPMENT
   if (c.equipped) {
     if (c.equipped.hat === 'hat_red') {
-      for (let x = 3; x <= 8; x++) cells[idx(x, 0)].style.backgroundColor = '#ff0000';
+      for (let x = 4; x <= 11; x++) cells[idx(x, 0)].style.backgroundColor = '#ff0000';
     } else if (c.equipped.hat === 'hat_blue') {
-      for (let x = 3; x <= 8; x++) cells[idx(x, 0)].style.backgroundColor = '#0000ff';
+      for (let x = 4; x <= 11; x++) cells[idx(x, 0)].style.backgroundColor = '#0000ff';
     } else if (c.equipped.hat === 'crown') {
-      for (let x = 3; x <= 8; x++) cells[idx(x, 0)].style.backgroundColor = '#ffd700';
-      cells[idx(4, 0)].style.backgroundColor = '#fff'; cells[idx(7, 0)].style.backgroundColor = '#fff';
+      for (let x = 4; x <= 11; x++) cells[idx(x, 0)].style.backgroundColor = '#ffd700';
+      cells[idx(5, 0)].style.backgroundColor = '#fff'; cells[idx(10, 0)].style.backgroundColor = '#fff';
     }
     if (c.equipped.weapon === 'sword') {
-      cells[idx(10, 7)].style.backgroundColor = '#ccc'; cells[idx(10, 8)].style.backgroundColor = '#ccc';
-      cells[idx(10, 9)].style.backgroundColor = '#ccc'; cells[idx(10, 10)].style.backgroundColor = '#8b4513';
+      cells[idx(14, 9)].style.backgroundColor = '#ccc'; cells[idx(14, 10)].style.backgroundColor = '#ccc';
+      cells[idx(14, 11)].style.backgroundColor = '#ccc'; cells[idx(14, 12)].style.backgroundColor = '#8b4513';
     } else if (c.equipped.weapon === 'wand') {
-      cells[idx(10, 6)].style.backgroundColor = '#9932cc'; cells[idx(10, 7)].style.backgroundColor = '#9932cc';
-      cells[idx(10, 8)].style.backgroundColor = '#9932cc';
+      cells[idx(14, 8)].style.backgroundColor = '#9932cc'; cells[idx(14, 9)].style.backgroundColor = '#9932cc';
+      cells[idx(14, 10)].style.backgroundColor = '#9932cc';
     }
     if (c.equipped.shield === 'shield') {
-      cells[idx(1, 7)].style.backgroundColor = '#8b4513'; cells[idx(1, 8)].style.backgroundColor = '#8b4513';
-      cells[idx(1, 9)].style.backgroundColor = '#8b4513';
+      cells[idx(1, 9)].style.backgroundColor = '#8b4513'; cells[idx(1, 10)].style.backgroundColor = '#8b4513';
+      cells[idx(1, 11)].style.backgroundColor = '#8b4513';
     }
   }
 }
 
+/* ================= ENEMIES (REFINED) ================= */
+
 function renderEnemy(container, enemy) {
   container.innerHTML = '';
   const type = enemy.type;
-  const w = type === 'slime' ? 8 : type === 'dragon' ? 14 : 10;
-  const h = type === 'slime' ? 8 : type === 'skeleton' ? 12 : 10;
+  const configs = {
+    slime: { w: 10, h: 8 },
+    skeleton: { w: 12, h: 14 },
+    robot: { w: 14, h: 12 },
+    dragon: { w: 18, h: 12 }
+  };
+  const cfg = configs[type];
   const grid = document.createElement('div');
   grid.className = `enemy-sprite ${type}`;
-  grid.style.gridTemplateColumns = `repeat(${w}, 8px)`;
-  grid.style.gridTemplateRows = `repeat(${h}, 8px)`;
-  
+  grid.style.gridTemplateColumns = `repeat(${cfg.w}, 6px)`;
+  grid.style.gridTemplateRows = `repeat(${cfg.h}, 6px)`;
   const cells = [];
-  for (let i = 0; i < w * h; i++) {
+  for (let i = 0; i < cfg.w * cfg.h; i++) {
     const cell = document.createElement('div');
     cell.className = 'px';
     grid.appendChild(cell);
     cells.push(cell);
   }
   container.appendChild(grid);
-  
-  const idx = (x, y) => y * w + x;
+  const idx = (x, y) => y * cfg.w + x;
   const c = enemy.color;
-  
+
   if (type === 'slime') {
-    for (let y = 3; y <= 6; y++) {
-      for (let x = 2; x <= 5; x++) cells[idx(x, y)].style.backgroundColor = c;
-    }
-    cells[idx(1, 5)].style.backgroundColor = c; cells[idx(6, 5)].style.backgroundColor = c;
-    cells[idx(2, 2)].style.backgroundColor = c; cells[idx(5, 2)].style.backgroundColor = c;
-    cells[idx(3, 7)].style.backgroundColor = c; cells[idx(4, 7)].style.backgroundColor = c;
-    cells[idx(3, 4)].style.backgroundColor = '#000'; cells[idx(4, 4)].style.backgroundColor = '#000';
+    for (let y = 3; y <= 6; y++) for (let x = 2; x <= 7; x++) cells[idx(x, y)].style.backgroundColor = c;
+    cells[idx(1, 5)].style.backgroundColor = c; cells[idx(8, 5)].style.backgroundColor = c;
+    cells[idx(2, 2)].style.backgroundColor = c; cells[idx(7, 2)].style.backgroundColor = c;
+    cells[idx(3, 7)].style.backgroundColor = c; cells[idx(4, 7)].style.backgroundColor = c; cells[idx(5, 7)].style.backgroundColor = c; cells[idx(6, 7)].style.backgroundColor = c;
+    cells[idx(3, 4)].style.backgroundColor = '#000'; cells[idx(6, 4)].style.backgroundColor = '#000';
+    cells[idx(3, 5)].style.backgroundColor = '#fff'; cells[idx(6, 5)].style.backgroundColor = '#fff';
   } else if (type === 'skeleton') {
-    for (let y = 1; y <= 10; y++) cells[idx(4, y)].style.backgroundColor = c;
-    cells[idx(3, 2)].style.backgroundColor = c; cells[idx(5, 2)].style.backgroundColor = c;
-    cells[idx(2, 3)].style.backgroundColor = c; cells[idx(6, 3)].style.backgroundColor = c;
-    cells[idx(1, 5)].style.backgroundColor = c; cells[idx(7, 5)].style.backgroundColor = c;
-    cells[idx(2, 7)].style.backgroundColor = c; cells[idx(6, 7)].style.backgroundColor = c;
-    cells[idx(3, 9)].style.backgroundColor = c; cells[idx(5, 9)].style.backgroundColor = c;
-    cells[idx(3, 3)].style.backgroundColor = '#000'; cells[idx(5, 3)].style.backgroundColor = '#000';
+    for (let y = 1; y <= 12; y++) cells[idx(5, y)].style.backgroundColor = c; cells[idx(6, y)].style.backgroundColor = c;
+    cells[idx(4, 2)].style.backgroundColor = c; cells[idx(7, 2)].style.backgroundColor = c;
+    cells[idx(3, 3)].style.backgroundColor = c; cells[idx(8, 3)].style.backgroundColor = c;
+    cells[idx(2, 5)].style.backgroundColor = c; cells[idx(9, 5)].style.backgroundColor = c;
+    cells[idx(1, 6)].style.backgroundColor = c; cells[idx(10, 6)].style.backgroundColor = c;
+    cells[idx(3, 8)].style.backgroundColor = c; cells[idx(8, 8)].style.backgroundColor = c;
+    cells[idx(4, 10)].style.backgroundColor = c; cells[idx(7, 10)].style.backgroundColor = c;
+    cells[idx(3, 12)].style.backgroundColor = c; cells[idx(8, 12)].style.backgroundColor = c;
+    cells[idx(4, 3)].style.backgroundColor = '#000'; cells[idx(7, 3)].style.backgroundColor = '#000';
   } else if (type === 'robot') {
-    for (let y = 2; y <= 7; y++) {
-      for (let x = 3; x <= 6; x++) cells[idx(x, y)].style.backgroundColor = c;
-    }
-    cells[idx(2, 3)].style.backgroundColor = c; cells[idx(7, 3)].style.backgroundColor = c;
-    cells[idx(2, 4)].style.backgroundColor = c; cells[idx(7, 4)].style.backgroundColor = c;
-    cells[idx(4, 5)].style.backgroundColor = '#ff0000';
-    cells[idx(1, 6)].style.backgroundColor = '#555'; cells[idx(8, 6)].style.backgroundColor = '#555';
-    cells[idx(3, 8)].style.backgroundColor = '#555'; cells[idx(6, 8)].style.backgroundColor = '#555';
-  } else if (type === 'dragon') {
-    for (let x = 4; x <= 9; x++) cells[idx(x, 3)].style.backgroundColor = c;
-    for (let y = 3; y <= 7; y++) {
-      for (let x = 5; x <= 8; x++) cells[idx(x, y)].style.backgroundColor = c;
-    }
+    for (let y = 2; y <= 9; y++) for (let x = 4; x <= 9; x++) cells[idx(x, y)].style.backgroundColor = c;
+    cells[idx(3, 3)].style.backgroundColor = c; cells[idx(10, 3)].style.backgroundColor = c;
     cells[idx(3, 4)].style.backgroundColor = c; cells[idx(10, 4)].style.backgroundColor = c;
-    cells[idx(2, 5)].style.backgroundColor = c; cells[idx(11, 5)].style.backgroundColor = c;
-    cells[idx(1, 4)].style.backgroundColor = c; cells[idx(1, 5)].style.backgroundColor = c;
-    cells[idx(6, 2)].style.backgroundColor = c; cells[idx(7, 2)].style.backgroundColor = c;
-    cells[idx(5, 8)].style.backgroundColor = c; cells[idx(8, 8)].style.backgroundColor = c;
-    cells[idx(4, 9)].style.backgroundColor = c; cells[idx(9, 9)].style.backgroundColor = c;
-    cells[idx(6, 4)].style.backgroundColor = '#ffff00'; cells[idx(7, 4)].style.backgroundColor = '#ffff00';
+    cells[idx(2, 5)].style.backgroundColor = '#555'; cells[idx(11, 5)].style.backgroundColor = '#555';
+    cells[idx(2, 6)].style.backgroundColor = '#555'; cells[idx(11, 6)].style.backgroundColor = '#555';
+    cells[idx(5, 5)].style.backgroundColor = '#ff0000'; cells[idx(8, 5)].style.backgroundColor = '#ff0000';
+    cells[idx(5, 6)].style.backgroundColor = '#ff0000'; cells[idx(8, 6)].style.backgroundColor = '#ff0000';
+    cells[idx(4, 10)].style.backgroundColor = '#555'; cells[idx(9, 10)].style.backgroundColor = '#555';
+    cells[idx(4, 11)].style.backgroundColor = '#555'; cells[idx(9, 11)].style.backgroundColor = '#555';
+  } else if (type === 'dragon') {
+    for (let x = 5; x <= 12; x++) cells[idx(x, 3)].style.backgroundColor = c;
+    for (let y = 3; y <= 8; y++) for (let x = 6; x <= 11; x++) cells[idx(x, y)].style.backgroundColor = c;
+    cells[idx(4, 4)].style.backgroundColor = c; cells[idx(13, 4)].style.backgroundColor = c;
+    cells[idx(3, 5)].style.backgroundColor = c; cells[idx(14, 5)].style.backgroundColor = c;
+    cells[idx(2, 4)].style.backgroundColor = c; cells[idx(2, 5)].style.backgroundColor = c;
+    cells[idx(1, 5)].style.backgroundColor = '#ff4400'; cells[idx(1, 6)].style.backgroundColor = '#ff8800';
+    cells[idx(7, 2)].style.backgroundColor = c; cells[idx(8, 2)].style.backgroundColor = c; cells[idx(9, 2)].style.backgroundColor = c;
+    cells[idx(6, 9)].style.backgroundColor = c; cells[idx(11, 9)].style.backgroundColor = c;
+    cells[idx(5, 10)].style.backgroundColor = c; cells[idx(12, 10)].style.backgroundColor = c;
+    cells[idx(7, 5)].style.backgroundColor = '#ffff00'; cells[idx(8, 5)].style.backgroundColor = '#ffff00'; cells[idx(9, 5)].style.backgroundColor = '#ffff00';
+    cells[idx(7, 6)].style.backgroundColor = '#000'; cells[idx(9, 6)].style.backgroundColor = '#000';
   }
 }
 
@@ -548,38 +539,32 @@ function initColorPickers() {
   const skinRow = $('#skin-colors');
   const hairRow = $('#hair-colors');
   const outfitRow = $('#outfit-colors');
-  
-  skinRow.innerHTML = '';
-  hairRow.innerHTML = '';
-  outfitRow.innerHTML = '';
-  
+  skinRow.innerHTML = ''; hairRow.innerHTML = ''; outfitRow.innerHTML = '';
+
   SKIN_COLORS.forEach((c, i) => {
     const swatch = document.createElement('div');
     swatch.className = 'color-swatch' + (i === 0 ? ' active' : '');
     swatch.style.backgroundColor = c;
-    swatch.dataset.color = c;
-    swatch.dataset.type = 'skin';
+    swatch.dataset.color = c; swatch.dataset.type = 'skin';
     swatch.onclick = () => pickColor(swatch, 'skin');
     skinRow.appendChild(swatch);
   });
-  
-  [0, 3, 6, 9, 12, 15, 18, 21].forEach(i => {
+
+  [0, 3, 6, 9, 12, 15, 18].forEach(i => {
     const c = HAIR_COLORS[i] || HAIR_COLORS[0];
     const swatch = document.createElement('div');
     swatch.className = 'color-swatch' + (i === 0 ? ' active' : '');
     swatch.style.backgroundColor = c;
-    swatch.dataset.color = c;
-    swatch.dataset.type = 'hair';
+    swatch.dataset.color = c; swatch.dataset.type = 'hair';
     swatch.onclick = () => pickColor(swatch, 'hair');
     hairRow.appendChild(swatch);
   });
-  
+
   OUTFIT_COLORS.forEach((c, i) => {
     const swatch = document.createElement('div');
     swatch.className = 'color-swatch' + (i === 0 ? ' active' : '');
     swatch.style.backgroundColor = c;
-    swatch.dataset.color = c;
-    swatch.dataset.type = 'outfit';
+    swatch.dataset.color = c; swatch.dataset.type = 'outfit';
     swatch.onclick = () => pickColor(swatch, 'outfit');
     outfitRow.appendChild(swatch);
   });
@@ -610,26 +595,19 @@ function updateCharPreview() {
     hairStyle: getActiveOpt('hairStyle'),
     outfit: getActiveColor('outfit')
   };
-  renderAvatar($('#avatar-preview'), char, 10);
+  renderAvatar($('#avatar-preview'), char, 16, 20, 6);
 }
 
-/* ================= FIREBASE / AUTH ================= */
+/* ================= FIREBASE ================= */
 
 async function syncToCloud() {
   if (state.isGuest || !state.user || !window.fb) return;
   try {
     const { db, doc, setDoc, serverTimestamp } = window.fb;
-    const ref = doc(db, 'users', state.user.uid);
-    await setDoc(ref, {
-      username: state.username,
-      theme: state.theme,
-      character: state.character,
-      stats: state.stats,
-      quests: state.quests,
-      streak: state.streak,
-      lastActive: state.lastActive,
-      cosmetics: state.cosmetics,
-      equipped: state.equipped,
+    await setDoc(doc(db, 'users', state.user.uid), {
+      username: state.username, theme: state.theme, character: state.character,
+      stats: state.stats, quests: state.quests, streak: state.streak,
+      lastActive: state.lastActive, cosmetics: state.cosmetics, equipped: state.equipped,
       updatedAt: serverTimestamp()
     }, { merge: true });
   } catch(e) { console.warn('Cloud sync failed:', e); }
@@ -639,8 +617,7 @@ async function loadFromCloud() {
   if (state.isGuest || !state.user || !window.fb) return false;
   try {
     const { db, doc, getDoc } = window.fb;
-    const ref = doc(db, 'users', state.user.uid);
-    const snap = await getDoc(ref);
+    const snap = await getDoc(doc(db, 'users', state.user.uid));
     if (snap.exists()) {
       const data = snap.data();
       if (data.username) state.username = data.username;
@@ -663,11 +640,9 @@ async function updateLeaderboard() {
   try {
     const { db, doc, setDoc, serverTimestamp } = window.fb;
     await setDoc(doc(db, 'leaderboard', state.user.uid), {
-      username: state.username,
-      level: state.stats.level,
+      username: state.username, level: state.stats.level,
       quests: state.quests.filter(q => q.done).length,
-      gold: state.stats.gold,
-      streak: state.streak,
+      gold: state.stats.gold, streak: state.streak,
       updatedAt: serverTimestamp()
     });
   } catch(e) { console.warn('Leaderboard update failed:', e); }
@@ -683,53 +658,25 @@ async function checkUsernameExists(username) {
   } catch(e) { return false; }
 }
 
-/* ================= FLOW ================= */
+/* ================= AUTH FLOW ================= */
 
 function initAuth() {
-  if (!window.fb) {
-    setTimeout(initAuth, 500);
-    return;
-  }
-  
+  if (!window.fb) { setTimeout(initAuth, 500); return; }
   const { auth, onAuthStateChanged } = window.fb;
-  
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      state.user = user;
-      state.isGuest = false;
-      
-      // Try load from cloud first
+      state.user = user; state.isGuest = false;
       const hasCloud = await loadFromCloud();
-      
       if (!hasCloud) {
-        // New user — check if they need username
         const hasLocal = loadLocal();
-        if (!state.username) {
-          showView('view-username');
-          return;
-        }
+        if (!state.username) { showView('view-username'); return; }
       }
-      
-      // Check if setup complete
-      if (!state.theme) {
-        showView('view-theme');
-        return;
-      }
-      if (!state.character) {
-        initColorPickers();
-        updateCharPreview();
-        showView('view-character');
-        return;
-      }
-      
-      // All set — go to main
+      if (!state.theme) { showView('view-theme'); return; }
+      if (!state.character) { initColorPickers(); updateCharPreview(); showView('view-character'); return; }
       document.body.setAttribute('data-theme', state.theme);
       enterMainApp();
-      
     } else {
-      // Not signed in
-      state.user = null;
-      state.isGuest = false;
+      state.user = null; state.isGuest = false;
       showView('view-landing');
     }
   });
@@ -744,24 +691,20 @@ function enterMainApp() {
   renderLeaderboard();
 }
 
-/* ================= EVENT LISTENERS ================= */
+/* ================= EVENT BINDING ================= */
 
 function bindEvents() {
   // Landing
   $('#btn-google-signin').onclick = async () => {
-    if (!window.fb) return toast('Firebase not ready yet...');
+    if (!window.fb) return toast('Firebase not ready...');
     try {
       const { auth, googleProvider, signInWithPopup } = window.fb;
       await signInWithPopup(auth, googleProvider);
-    } catch(e) {
-      toast('Google sign-in failed: ' + (e.message || e.code));
-    }
+    } catch(e) { toast('Google sign-in failed: ' + (e.message || e.code)); }
   };
-  
-  $('#btn-email-toggle').onclick = () => {
-    $('#email-form').classList.toggle('hidden');
-  };
-  
+
+  $('#btn-email-toggle').onclick = () => { $('#email-form').classList.toggle('hidden'); };
+
   $$('.auth-tab').forEach(tab => {
     tab.onclick = () => {
       $$('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -771,199 +714,142 @@ function bindEvents() {
       $('#email-register').classList.toggle('hidden', etab !== 'register');
     };
   });
-  
+
   $('#btn-email-login').onclick = async () => {
     const email = $('#e-login-email').value.trim();
     const pass = $('#e-login-pass').value;
     if (!email || !pass) return toast('Enter email and password.');
-    try {
-      const { auth, signInWithEmailAndPassword } = window.fb;
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch(e) {
-      toast('Login failed: ' + (e.message || e.code));
-    }
+    try { await window.fb.signInWithEmailAndPassword(window.fb.auth, email, pass); }
+    catch(e) { toast('Login failed: ' + (e.message || e.code)); }
   };
-  
+
   $('#btn-email-register').onclick = async () => {
     const email = $('#e-reg-email').value.trim();
     const pass = $('#e-reg-pass').value;
     if (!email || !pass || pass.length < 6) return toast('Enter valid email and 6+ char password.');
-    try {
-      const { auth, createUserWithEmailAndPassword } = window.fb;
-      await createUserWithEmailAndPassword(auth, email, pass);
-    } catch(e) {
-      toast('Register failed: ' + (e.message || e.code));
-    }
+    try { await window.fb.createUserWithEmailAndPassword(window.fb.auth, email, pass); }
+    catch(e) { toast('Register failed: ' + (e.message || e.code)); }
   };
-  
+
   $('#btn-guest').onclick = () => {
-    state.isGuest = true;
-    state.user = null;
+    state.isGuest = true; state.user = null;
     loadLocal();
-    if (!state.theme) {
-      showView('view-theme');
-    } else if (!state.character) {
-      initColorPickers();
-      updateCharPreview();
-      showView('view-character');
-    } else {
-      document.body.setAttribute('data-theme', state.theme);
-      enterMainApp();
-    }
+    if (!state.theme) showView('view-theme');
+    else if (!state.character) { initColorPickers(); updateCharPreview(); showView('view-character'); }
+    else { document.body.setAttribute('data-theme', state.theme); enterMainApp(); }
   };
-  
+
   // Username
   $('#btn-save-username').onclick = async () => {
-    const input = $('#username-input');
-    const name = input.value.trim();
+    const name = $('#username-input').value.trim();
     const err = isValidUsername(name);
     const errEl = $('#username-error');
-    
-    if (err) {
-      errEl.textContent = err;
-      return;
-    }
-    
-    // Check if taken
+    if (err) { errEl.textContent = err; return; }
     const taken = await checkUsernameExists(name);
     if (taken && name.toLowerCase() !== (state.username || '').toLowerCase()) {
-      errEl.textContent = 'That name is already taken.';
-      return;
+      errEl.textContent = 'That name is already taken.'; return;
     }
-    
-    state.username = name;
-    errEl.textContent = '';
-    saveLocal();
-    await syncToCloud();
-    
-    // Next: theme select
+    state.username = name; errEl.textContent = ''; saveLocal(); await syncToCloud();
     showView('view-theme');
   };
-  
+
   // Theme
   $$('.theme-btn').forEach(btn => {
     btn.onclick = () => {
       setTheme(btn.dataset.theme);
-      initColorPickers();
-      updateCharPreview();
+      initColorPickers(); updateCharPreview();
       showView('view-character');
     };
   });
-  
+
   // Character
   $$('.opt-btn[data-opt="gender"]').forEach(btn => {
-    btn.onclick = () => {
-      $$('.opt-btn[data-opt="gender"]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      updateCharPreview();
-    };
+    btn.onclick = () => { $$('.opt-btn[data-opt="gender"]').forEach(b => b.classList.remove('active')); btn.classList.add('active'); updateCharPreview(); };
   });
-  
   $$('.opt-btn[data-opt="hairStyle"]').forEach(btn => {
-    btn.onclick = () => {
-      $$('.opt-btn[data-opt="hairStyle"]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      updateCharPreview();
-    };
+    btn.onclick = () => { $$('.opt-btn[data-opt="hairStyle"]').forEach(b => b.classList.remove('active')); btn.classList.add('active'); updateCharPreview(); };
   });
-  
   $('#char-name').oninput = updateCharPreview;
-  
+
   $('#btn-start-adventure').onclick = async () => {
     state.character = {
       name: $('#char-name').value.trim() || 'Hero',
-      gender: getActiveOpt('gender'),
-      skin: getActiveColor('skin'),
-      hairColor: getActiveColor('hair'),
-      hairStyle: getActiveOpt('hairStyle'),
+      gender: getActiveOpt('gender'), skin: getActiveColor('skin'),
+      hairColor: getActiveColor('hair'), hairStyle: getActiveOpt('hairStyle'),
       outfit: getActiveColor('outfit')
     };
-    saveLocal();
-    await syncToCloud();
-    enterMainApp();
+    saveLocal(); await syncToCloud(); enterMainApp();
   };
-  
+
   // Logout
   $('#btn-logout').onclick = async () => {
-    if (!state.isGuest && window.fb) {
-      try { await window.fb.signOut(window.fb.auth); } catch(e) {}
-    }
-    clearLocal();
-    location.reload();
+    if (!state.isGuest && window.fb) { try { await window.fb.signOut(window.fb.auth); } catch(e) {} }
+    clearLocal(); location.reload();
   };
-  
+
   // Nav
   $$('.nav-btn').forEach(btn => {
     btn.onclick = (e) => {
       e.preventDefault();
       showMainView(btn.dataset.view);
       if (btn.dataset.view === 'leaderboard') renderLeaderboard();
-      if (btn.dataset.view === 'character') {
-        renderAvatar($('#char-big-avatar'), state.character, 12);
-        updateCharPage();
-      }
+      if (btn.dataset.view === 'character') { renderAvatar($('#char-big-avatar'), state.character, 20, 24, 6); updateCharPage(); }
       if (btn.dataset.view === 'battle') updateBattleView();
     };
   });
-  
+
   // Quests
   $('#btn-add-quest').onclick = addQuest;
   $('#quest-input').onkeydown = (e) => { if (e.key === 'Enter') addQuest(); };
-  
   $$('.filter-btn').forEach(btn => {
-    btn.onclick = () => {
-      $$('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.filter = btn.dataset.filter;
-      renderQuests();
+    btn.onclick = () => { $$('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.filter = btn.dataset.filter; renderQuests(); };
+  });
+
+  // Practice tabs
+  $$('.practice-tab').forEach(tab => {
+    tab.onclick = () => {
+      $$('.practice-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const ptab = tab.dataset.ptab;
+      $('#practice-preset').classList.toggle('hidden', ptab !== 'preset');
+      $('#practice-custom').classList.toggle('hidden', ptab !== 'custom');
+      state.practice.mode = ptab;
     };
   });
-  
-  // Practice
+
+  // Preset practice
   $$('.opt-btn[data-grade]').forEach(btn => {
-    btn.onclick = () => {
-      $$('.opt-btn[data-grade]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.practice.grade = parseInt(btn.dataset.grade);
-    };
+    btn.onclick = () => { $$('.opt-btn[data-grade]').forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.practice.grade = parseInt(btn.dataset.grade); };
   });
-  
   $$('.opt-btn[data-subject]').forEach(btn => {
-    btn.onclick = () => {
-      $$('.opt-btn[data-subject]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.practice.subject = btn.dataset.subject;
-    };
+    btn.onclick = () => { $$('.opt-btn[data-subject]').forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.practice.subject = btn.dataset.subject; };
   });
-  
   $('#btn-start-practice').onclick = startPractice;
+
+  // Custom study
+  $('#study-file').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { $('#study-text').value = ev.target.result; };
+    reader.readAsText(file);
+  };
+  $('#btn-generate-custom').onclick = generateCustomQuiz;
+
+  // Practice answer
   $('#btn-submit-answer').onclick = submitPracticeAnswer;
   $('#practice-answer').onkeydown = (e) => { if (e.key === 'Enter') submitPracticeAnswer(); };
-  
+
   // Battle
-  $$('.battle-btn').forEach(btn => {
-    btn.onclick = () => doBattleAction(btn.dataset.action);
-  });
-  
+  $$('.battle-btn').forEach(btn => { btn.onclick = () => doBattleAction(btn.dataset.action); });
   $('#btn-start-battle').onclick = startBattle;
-  
+
   // Leaderboard
   $$('.lb-tab').forEach(btn => {
-    btn.onclick = () => {
-      $$('.lb-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.lbFilter = btn.dataset.lb;
-      renderLeaderboard();
-    };
+    btn.onclick = () => { $$('.lb-tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.lbFilter = btn.dataset.lb; renderLeaderboard(); };
   });
-  
   $$('.lb-time-btn').forEach(btn => {
-    btn.onclick = () => {
-      $$('.lb-time-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.lbTime = btn.dataset.time;
-      renderLeaderboard();
-    };
+    btn.onclick = () => { $$('.lb-time-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); state.lbTime = btn.dataset.time; renderLeaderboard(); };
   });
 }
 
@@ -985,7 +871,7 @@ function detectSeverity(text) {
   return 'low';
 }
 
-function generateQuestName(text, category) {
+function generateQuestName(text) {
   const theme = THEMES[state.theme] || THEMES.cyberpunk;
   const sev = detectSeverity(text);
   const pool = theme.questNames[sev];
@@ -998,34 +884,19 @@ function addQuest() {
   const input = $('#quest-input');
   const text = input.value.trim();
   if (!text) return;
-  
   const cat = detectCategory(text);
   const sev = detectSeverity(text);
   const rew = REWARDS[sev];
   const exp = rand(rew.min, rew.max);
   const gold = rand(rew.goldMin, rew.goldMax);
   const stars = sev === 'high' ? '★★★' : sev === 'medium' ? '★★☆' : '★☆☆';
-  
   const quest = {
-    id: Date.now().toString(),
-    text: text,
-    title: generateQuestName(text, cat),
-    category: cat,
-    severity: sev,
-    exp: exp,
-    gold: gold,
-    stars: stars,
-    done: false,
-    created: Date.now(),
-    due: Date.now() + 86400000
+    id: Date.now().toString(), text, title: generateQuestName(text),
+    category: cat, severity: sev, exp, gold, stars,
+    done: false, created: Date.now(), due: Date.now() + 86400000
   };
-  
   state.quests.unshift(quest);
-  input.value = '';
-  saveLocal();
-  syncToCloud();
-  renderQuests();
-  updateUI();
+  input.value = ''; saveLocal(); syncToCloud(); renderQuests(); updateUI();
   toast(`Quest Added: ${quest.title}`);
 }
 
@@ -1033,26 +904,11 @@ function toggleQuest(id) {
   const q = state.quests.find(x => x.id === id);
   if (!q) return;
   q.done = !q.done;
-  
   if (q.done) {
-    addExp(q.exp);
-    addGold(q.gold);
-    toast(`+${q.exp} EXP  +${q.gold} GOLD`);
-    
-    // 30% battle trigger
-    if (Math.random() < 0.3) {
-      setTimeout(() => {
-        showMainView('battle');
-        startBattle();
-      }, 800);
-    }
+    addExp(q.exp); addGold(q.gold); toast(`+${q.exp} EXP  +${q.gold} GOLD`);
+    if (Math.random() < 0.3) setTimeout(() => { showMainView('battle'); startBattle(); }, 800);
   }
-  
-  saveLocal();
-  syncToCloud();
-  updateLeaderboard();
-  renderQuests();
-  updateUI();
+  saveLocal(); syncToCloud(); updateLeaderboard(); renderQuests(); updateUI();
 }
 
 function deleteQuest(id) {
@@ -1061,10 +917,7 @@ function deleteQuest(id) {
     card.classList.add('poof');
     setTimeout(() => {
       state.quests = state.quests.filter(q => q.id !== id);
-      saveLocal();
-      syncToCloud();
-      renderQuests();
-      updateUI();
+      saveLocal(); syncToCloud(); renderQuests(); updateUI();
     }, 500);
   }
 }
@@ -1072,177 +925,179 @@ function deleteQuest(id) {
 function renderQuests() {
   const list = $('#quest-list');
   list.innerHTML = '';
-  
   let filtered = state.quests;
   if (state.filter === 'active') filtered = state.quests.filter(q => !q.done);
   else if (state.filter === 'done') filtered = state.quests.filter(q => q.done);
   else if (['school','work','health','chores','personal'].includes(state.filter)) filtered = state.quests.filter(q => q.category === state.filter);
-  
   const now = Date.now();
-  
+
   filtered.forEach(q => {
     const div = document.createElement('div');
     div.className = 'quest-card' + (q.done ? ' done' : '') + (q.due < now && !q.done ? ' overdue' : '');
     div.dataset.id = q.id;
-    
     const catInfo = CATEGORIES[q.category] || CATEGORIES.personal;
-    
     div.innerHTML = `
-      <div class="quest-header">
-        <div class="quest-title">${q.title}</div>
-        <div class="quest-badges">
-          <span class="badge ${catInfo.color}">${catInfo.label}</span>
-        </div>
-      </div>
-      <div class="quest-meta">
-        <span class="stars">${q.stars}</span>
-        <div class="quest-rewards">
-          <span class="reward">⚡ ${q.exp}</span>
-          <span class="reward">◆ ${q.gold}</span>
-        </div>
-      </div>
-      <div class="quest-actions">
-        <button class="pixel-btn small">${q.done ? 'UNDO' : 'COMPLETE'}</button>
-        <button class="pixel-btn small secondary">DELETE</button>
-      </div>
+      <div class="quest-header"><div class="quest-title">${q.title}</div><div class="quest-badges"><span class="badge ${catInfo.color}">${catInfo.label}</span></div></div>
+      <div class="quest-meta"><span class="stars">${q.stars}</span><div class="quest-rewards"><span class="reward">⚡ ${q.exp}</span><span class="reward">◆ ${q.gold}</span></div></div>
+      <div class="quest-actions"><button class="pixel-btn small">${q.done ? 'UNDO' : 'COMPLETE'}</button><button class="pixel-btn small secondary">DELETE</button></div>
     `;
-    
     const [completeBtn, deleteBtn] = div.querySelectorAll('.pixel-btn');
     completeBtn.onclick = () => toggleQuest(q.id);
     deleteBtn.onclick = () => deleteQuest(q.id);
-    
     list.appendChild(div);
   });
-  
-  if (filtered.length === 0) {
-    list.innerHTML = '<p style="text-align:center;color:var(--accent);font-size:10px;padding:20px;">NO QUESTS FOUND</p>';
-  }
-  
-  // Dashboard mini list
+
+  if (filtered.length === 0) list.innerHTML = '<p style="text-align:center;color:var(--accent);font-size:10px;padding:20px;">NO QUESTS FOUND</p>';
+
   const dash = $('#dash-quests');
   if (dash) {
     dash.innerHTML = '';
     const active = state.quests.filter(q => !q.done).slice(0, 5);
     active.forEach(q => {
       const mini = document.createElement('div');
-      mini.className = 'mini-quest';
-      mini.innerHTML = `<span>${q.title}</span>`;
-      mini.onclick = () => showMainView('quests');
-      dash.appendChild(mini);
+      mini.className = 'mini-quest'; mini.innerHTML = `<span>${q.title}</span>`;
+      mini.onclick = () => showMainView('quests'); dash.appendChild(mini);
     });
     if (active.length === 0) dash.innerHTML = '<p style="font-size:8px;color:var(--accent);">All quests complete!</p>';
   }
 }
 
-/* ================= STATS & LEVELING ================= */
+/* ================= STATS ================= */
 
 function addExp(amount) {
   state.stats.exp += amount;
-  while (state.stats.exp >= state.stats.maxExp) {
-    state.stats.exp -= state.stats.maxExp;
-    levelUp();
-  }
+  while (state.stats.exp >= state.stats.maxExp) { state.stats.exp -= state.stats.maxExp; levelUp(); }
   updateUI();
 }
 
-function addGold(amount) {
-  state.stats.gold += amount;
-  updateUI();
-}
+function addGold(amount) { state.stats.gold += amount; updateUI(); }
 
 function levelUp() {
-  state.stats.level++;
-  state.stats.maxExp = Math.floor(state.stats.maxExp * 1.5);
-  state.stats.maxHp += 10;
-  state.stats.hp = state.stats.maxHp;
-  state.stats.maxMp += 5;
-  state.stats.mp = state.stats.maxMp;
-  state.stats.str += rand(1, 3);
-  state.stats.int += rand(1, 3);
-  state.stats.agi += rand(1, 3);
-  state.stats.def += rand(1, 3);
-  
+  state.stats.level++; state.stats.maxExp = Math.floor(state.stats.maxExp * 1.5);
+  state.stats.maxHp += 10; state.stats.hp = state.stats.maxHp;
+  state.stats.maxMp += 5; state.stats.mp = state.stats.maxMp;
+  state.stats.str += rand(1, 3); state.stats.int += rand(1, 3);
+  state.stats.agi += rand(1, 3); state.stats.def += rand(1, 3);
   $('#levelup-text').textContent = `You reached Level ${state.stats.level}!`;
-  $('#levelup-stats').innerHTML = `
-    <div>HP +10 | MP +5</div>
-    <div>STR +${state.stats.str} | INT +${state.stats.int}</div>
-    <div>AGI +${state.stats.agi} | DEF +${state.stats.def}</div>
-  `;
+  $('#levelup-stats').innerHTML = `<div>HP +10 | MP +5</div><div>STR +${state.stats.str} | INT +${state.stats.int}</div><div>AGI +${state.stats.agi} | DEF +${state.stats.def}</div>`;
   $('#overlay-levelup').classList.remove('hidden');
-  
-  saveLocal();
-  syncToCloud();
-  updateLeaderboard();
+  saveLocal(); syncToCloud(); updateLeaderboard();
 }
 
-window.closeLevelUp = function() {
-  $('#overlay-levelup').classList.add('hidden');
-};
+window.closeLevelUp = function() { $('#overlay-levelup').classList.add('hidden'); };
 
 function updateUI() {
   const s = state.stats;
-  $('#stat-level').textContent = s.level;
-  $('#stat-gold').textContent = s.gold;
-  $('#val-hp').textContent = `${s.hp}/${s.maxHp}`;
-  $('#val-mp').textContent = `${s.mp}/${s.maxMp}`;
-  $('#val-exp').textContent = `${s.exp}/${s.maxExp}`;
+  $('#stat-level').textContent = s.level; $('#stat-gold').textContent = s.gold;
+  $('#val-hp').textContent = `${s.hp}/${s.maxHp}`; $('#val-mp').textContent = `${s.mp}/${s.maxMp}`; $('#val-exp').textContent = `${s.exp}/${s.maxExp}`;
   $('#bar-hp').style.width = Math.round((s.hp / s.maxHp) * 100) + '%';
   $('#bar-mp').style.width = Math.round((s.mp / s.maxMp) * 100) + '%';
   $('#bar-exp').style.width = Math.round((s.exp / s.maxExp) * 100) + '%';
-  
-  $('#stat-str').textContent = s.str;
-  $('#stat-int').textContent = s.int;
-  $('#stat-agi').textContent = s.agi;
-  $('#stat-def').textContent = s.def;
-  
+  $('#stat-str').textContent = s.str; $('#stat-int').textContent = s.int;
+  $('#stat-agi').textContent = s.agi; $('#stat-def').textContent = s.def;
   $('#streak-count').textContent = state.streak;
-  
   const total = state.quests.length;
   const done = state.quests.filter(q => q.done).length;
   const pct = total === 0 ? 0 : Math.round((done / total) * 100);
-  $('#daily-bar').style.width = pct + '%';
-  $('#daily-pct').textContent = pct + '%';
-  
-  renderAvatar($('#mini-avatar'), state.character, 4);
+  $('#daily-bar').style.width = pct + '%'; $('#daily-pct').textContent = pct + '%';
+  renderAvatar($('#mini-avatar'), state.character, 12, 16, 4);
 }
 
 function updateCharPage() {
   const s = state.stats;
   $('#char-display-name').textContent = state.character?.name || 'Hero';
-  $('#big-level').textContent = s.level;
-  $('#big-exp').textContent = `${s.exp}/${s.maxExp}`;
-  $('#big-gold').textContent = s.gold;
-  $('#big-quests').textContent = state.quests.filter(q => q.done).length;
-  
-  $('#val-str').textContent = s.str;
-  $('#val-int').textContent = s.int;
-  $('#val-agi').textContent = s.agi;
-  $('#val-def').textContent = s.def;
-  
+  $('#big-level').textContent = s.level; $('#big-exp').textContent = `${s.exp}/${s.maxExp}`;
+  $('#big-gold').textContent = s.gold; $('#big-quests').textContent = state.quests.filter(q => q.done).length;
+  $('#val-str').textContent = s.str; $('#val-int').textContent = s.int; $('#val-agi').textContent = s.agi; $('#val-def').textContent = s.def;
   $('#bar-str').style.width = Math.min(100, s.str * 5) + '%';
   $('#bar-int').style.width = Math.min(100, s.int * 5) + '%';
   $('#bar-agi').style.width = Math.min(100, s.agi * 5) + '%';
   $('#bar-def').style.width = Math.min(100, s.def * 5) + '%';
 }
 
+/* ================= CUSTOM QUIZ GENERATOR ================= */
+
+function generateQuestionsFromText(text) {
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+  const questions = [];
+  const allWords = text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+  const uniqueWords = [...new Set(allWords)].filter(w => !COMMON_WORDS.has(w));
+
+  sentences.forEach((sentence) => {
+    const clean = sentence.trim();
+    if (clean.length < 20) return;
+    const words = clean.match(/\b[a-zA-Z']+\b/g) || [];
+    const candidates = words.map((w, i) => ({
+      word: w, index: i, len: w.length,
+      score: w.length + (w[0] === w[0].toUpperCase() ? 4 : 0) + (/[aeiou]/i.test(w) ? 1 : 0)
+    })).filter(c => !COMMON_WORDS.has(c.word.toLowerCase()) && c.word.length > 3);
+
+    if (candidates.length === 0) return;
+    candidates.sort((a, b) => b.score - a.score);
+    const target = candidates[0];
+
+    const blanked = words.map((w, i) => i === target.index ? '_____' : w).join(' ');
+    const distractors = [];
+    const pool = uniqueWords.filter(w => w.toLowerCase() !== target.word.toLowerCase());
+    while (distractors.length < 3 && pool.length > 0) {
+      const r = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+      if (r) distractors.push(r.charAt(0).toUpperCase() + r.slice(1));
+    }
+    while (distractors.length < 3) distractors.push('Unknown');
+
+    const options = [target.word, ...distractors].sort(() => Math.random() - 0.5);
+    const correctIndex = options.indexOf(target.word);
+
+    questions.push({
+      q: blanked, fullSentence: clean, answer: target.word,
+      options, type: 'choice', source: 'custom'
+    });
+  });
+
+  return questions.slice(0, 20);
+}
+
+function generateCustomQuiz() {
+  const text = $('#study-text').value.trim();
+  if (!text || text.length < 50) return toast('Paste at least 50 characters of notes.');
+  const questions = generateQuestionsFromText(text);
+  if (questions.length === 0) return toast('Could not generate questions. Try longer, more detailed notes.');
+  state.practice.customQuestions = questions;
+  state.practice.customIndex = 0;
+  state.practice.mode = 'custom';
+  toast(`Generated ${questions.length} questions!`);
+  startPractice();
+}
+
 /* ================= PRACTICE ================= */
 
 function startPractice() {
-  const pool = PRACTICE_QUESTIONS[state.practice.grade]?.[state.practice.subject] || [];
-  if (pool.length === 0) return toast('No questions available.');
-  
-  const q = pool[rand(0, pool.length - 1)];
+  let q;
+  if (state.practice.mode === 'custom') {
+    if (state.practice.customIndex >= state.practice.customQuestions.length) {
+      toast('Trial complete! All questions answered.');
+      state.practice.customIndex = 0;
+      $('#practice-area').classList.add('hidden');
+      return;
+    }
+    q = state.practice.customQuestions[state.practice.customIndex];
+  } else {
+    const pool = PRACTICE_QUESTIONS[state.practice.grade]?.[state.practice.subject] || [];
+    if (pool.length === 0) return toast('No questions available.');
+    q = pool[rand(0, pool.length - 1)];
+  }
+
   state.practice.current = q;
-  
   $('#practice-setup').classList.add('hidden');
+  $('#practice-custom').classList.add('hidden');
   $('#practice-area').classList.remove('hidden');
   $('#practice-question').textContent = q.q;
-  
+
   const optsDiv = $('#practice-options');
   optsDiv.innerHTML = '';
   $('#practice-answer').classList.add('hidden');
   $('#btn-submit-answer').classList.add('hidden');
-  
+
   if (q.type === 'choice') {
     q.options.forEach((opt, i) => {
       const btn = document.createElement('button');
@@ -1261,16 +1116,20 @@ function startPractice() {
 
 function submitPracticeChoice(idx, btn) {
   const q = state.practice.current;
-  const correct = idx === q.a;
+  const correct = idx === q.a || (q.source === 'custom' && q.options[idx] === q.answer);
   $$('.practice-opt-btn').forEach(b => b.disabled = true);
-  
   if (correct) {
     btn.classList.add('correct');
     handlePracticeCorrect();
   } else {
     btn.classList.add('wrong');
-    const correctBtn = $$('.practice-opt-btn')[q.a];
-    if (correctBtn) correctBtn.classList.add('correct');
+    if (q.source === 'custom') {
+      const correctBtn = Array.from($$('.practice-opt-btn')).find(b => b.textContent === q.answer);
+      if (correctBtn) correctBtn.classList.add('correct');
+    } else {
+      const correctBtn = $$('.practice-opt-btn')[q.a];
+      if (correctBtn) correctBtn.classList.add('correct');
+    }
     handlePracticeWrong();
   }
 }
@@ -1279,29 +1138,21 @@ function submitPracticeAnswer() {
   const input = $('#practice-answer');
   const val = input.value.trim().toLowerCase().replace(/\s/g, '');
   const correct = state.practice.current.a.toLowerCase().replace(/\s/g, '');
-  
-  if (val === correct) {
-    handlePracticeCorrect();
-  } else {
-    handlePracticeWrong();
-  }
+  if (val === correct) handlePracticeCorrect(); else handlePracticeWrong();
 }
 
 function handlePracticeCorrect() {
-  state.practice.streak++;
-  $('#practice-streak').textContent = state.practice.streak;
-  const exp = 10 + state.practice.streak * 2;
-  const gold = 5 + state.practice.streak;
-  addExp(exp);
-  addGold(gold);
-  toast(`Correct! +${exp} EXP  +${gold} GOLD`);
+  state.practice.streak++; $('#practice-streak').textContent = state.practice.streak;
+  const exp = 10 + state.practice.streak * 2; const gold = 5 + state.practice.streak;
+  addExp(exp); addGold(gold); toast(`Correct! +${exp} EXP  +${gold} GOLD`);
+  if (state.practice.mode === 'custom') state.practice.customIndex++;
   setTimeout(startPractice, 1200);
 }
 
 function handlePracticeWrong() {
-  state.practice.streak = 0;
-  $('#practice-streak').textContent = '0';
+  state.practice.streak = 0; $('#practice-streak').textContent = '0';
   toast('Wrong! Streak reset.');
+  if (state.practice.mode === 'custom') state.practice.customIndex++;
   setTimeout(startPractice, 1500);
 }
 
@@ -1311,39 +1162,25 @@ function startBattle() {
   const enemyTemplate = ENEMIES[rand(0, ENEMIES.length - 1)];
   state.battle = {
     enemy: { ...enemyTemplate, maxHp: enemyTemplate.hp },
-    heroHp: state.stats.hp,
-    heroMp: state.stats.mp,
-    turn: 0,
-    log: [],
-    over: false
+    heroHp: state.stats.hp, heroMp: state.stats.mp, turn: 0, log: [], over: false
   };
-  
   $('#battle-start').classList.add('hidden');
   $('#battle-screen').classList.remove('hidden');
   $('#overlay-battle').classList.remove('hidden');
   setTimeout(() => $('#overlay-battle').classList.add('hidden'), 300);
-  
   renderEnemy($('#enemy-sprite'), state.battle.enemy);
   $('#battle-hero-name').textContent = state.character?.name || 'Hero';
   $('#enemy-name').textContent = state.battle.enemy.name;
-  renderAvatar($('#battle-avatar'), state.character, 8);
-  
-  updateBattleUI();
-  battleLog(`A wild ${state.battle.enemy.name} appears!`);
-  
-  if ($('#auto-battle').checked) {
-    setTimeout(autoBattleTurn, 800);
-  }
+  renderAvatar($('#battle-avatar'), state.character, 16, 20, 6);
+  updateBattleUI(); battleLog(`A wild ${state.battle.enemy.name} appears!`);
+  if ($('#auto-battle').checked) setTimeout(autoBattleTurn, 800);
 }
 
 function updateBattleView() {
   if (!state.battle || state.battle.over) {
-    $('#battle-start').classList.remove('hidden');
-    $('#battle-screen').classList.add('hidden');
+    $('#battle-start').classList.remove('hidden'); $('#battle-screen').classList.add('hidden');
   } else {
-    $('#battle-start').classList.add('hidden');
-    $('#battle-screen').classList.remove('hidden');
-    updateBattleUI();
+    $('#battle-start').classList.add('hidden'); $('#battle-screen').classList.remove('hidden'); updateBattleUI();
   }
 }
 
@@ -1352,150 +1189,77 @@ function updateBattleUI() {
   const b = state.battle;
   $('#battle-hp-bar').style.width = Math.round((b.heroHp / state.stats.maxHp) * 100) + '%';
   $('#enemy-hp-bar').style.width = Math.round((b.enemy.hp / b.enemy.maxHp) * 100) + '%';
-  
   $$('.battle-btn').forEach(btn => btn.disabled = b.over);
 }
 
 function battleLog(msg) {
   const log = $('#battle-log');
   const line = document.createElement('div');
-  line.textContent = `> ${msg}`;
-  log.appendChild(line);
-  log.scrollTop = log.scrollHeight;
+  line.textContent = `> ${msg}`; log.appendChild(line); log.scrollTop = log.scrollHeight;
 }
 
 function doBattleAction(action) {
   if (!state.battle || state.battle.over) return;
-  const b = state.battle;
-  
-  // Hero turn
-  let heroDmg = 0;
-  let msg = '';
-  
+  const b = state.battle; let heroDmg = 0; let msg = '';
+
   if (action === 'attack') {
     heroDmg = Math.max(1, state.stats.str + rand(2, 6) - b.enemy.def);
     msg = `You attacked for ${heroDmg} damage!`;
     $('#battle-avatar').classList.add('lunge');
     setTimeout(() => $('#battle-avatar').classList.remove('lunge'), 300);
   } else if (action === 'magic') {
-    if (b.heroMp < 5) {
-      battleLog('Not enough MP!');
-      return;
-    }
-    b.heroMp -= 5;
-    heroDmg = Math.max(1, state.stats.int + rand(5, 12));
-    msg = `You cast magic for ${heroDmg} damage!`;
-  } else if (action === 'defend') {
-    msg = 'You brace for impact!';
-  } else if (action === 'item') {
+    if (b.heroMp < 5) { battleLog('Not enough MP!'); return; }
+    b.heroMp -= 5; heroDmg = Math.max(1, state.stats.int + rand(5, 12)); msg = `You cast magic for ${heroDmg} damage!`;
+  } else if (action === 'defend') { msg = 'You brace for impact!'; }
+  else if (action === 'item') {
     if (state.stats.gold >= 10) {
-      state.stats.gold -= 10;
-      const heal = 20;
-      b.heroHp = Math.min(state.stats.maxHp, b.heroHp + heal);
-      msg = `Used potion! Recovered ${heal} HP.`;
-      updateUI();
-    } else {
-      battleLog('Not enough gold for potion!');
-      return;
-    }
+      state.stats.gold -= 10; const heal = 20;
+      b.heroHp = Math.min(state.stats.maxHp, b.heroHp + heal); msg = `Used potion! Recovered ${heal} HP.`; updateUI();
+    } else { battleLog('Not enough gold for potion!'); return; }
   } else if (action === 'flee') {
-    if (rand(1, 100) > 50) {
-      battleLog('You fled successfully!');
-      endBattle(false);
-      return;
-    } else {
-      msg = 'Failed to flee!';
-    }
+    if (rand(1, 100) > 50) { battleLog('You fled successfully!'); endBattle(false); return; }
+    else msg = 'Failed to flee!';
   }
-  
+
   b.enemy.hp -= heroDmg;
-  if (heroDmg > 0) {
-    $('#enemy-sprite').classList.add('hit-flash');
-    setTimeout(() => $('#enemy-sprite').classList.remove('hit-flash'), 300);
-  }
+  if (heroDmg > 0) { $('#enemy-sprite').classList.add('hit-flash'); setTimeout(() => $('#enemy-sprite').classList.remove('hit-flash'), 300); }
   battleLog(msg);
-  
-  if (b.enemy.hp <= 0) {
-    b.enemy.hp = 0;
-    updateBattleUI();
-    setTimeout(() => winBattle(), 500);
-    return;
-  }
-  
+  if (b.enemy.hp <= 0) { b.enemy.hp = 0; updateBattleUI(); setTimeout(() => winBattle(), 500); return; }
   updateBattleUI();
-  
-  // Enemy turn
+
   setTimeout(() => {
     if (b.over) return;
     let dmg = Math.max(1, b.enemy.atk + rand(1, 4) - (action === 'defend' ? state.stats.def + 5 : state.stats.def));
-    if (dmg < 1) dmg = 1;
-    b.heroHp -= dmg;
-    
-    $('#battle-avatar').classList.add('shake');
-    setTimeout(() => $('#battle-avatar').classList.remove('shake'), 400);
-    
+    if (dmg < 1) dmg = 1; b.heroHp -= dmg;
+    $('#battle-avatar').classList.add('shake'); setTimeout(() => $('#battle-avatar').classList.remove('shake'), 400);
     battleLog(`${b.enemy.name} attacks for ${dmg} damage!`);
-    
-    if (b.heroHp <= 0) {
-      b.heroHp = 0;
-      updateBattleUI();
-      setTimeout(() => loseBattle(), 500);
-      return;
-    }
-    
+    if (b.heroHp <= 0) { b.heroHp = 0; updateBattleUI(); setTimeout(() => loseBattle(), 500); return; }
     updateBattleUI();
-    
-    if ($('#auto-battle').checked) {
-      setTimeout(autoBattleTurn, 800);
-    }
+    if ($('#auto-battle').checked) setTimeout(autoBattleTurn, 800);
   }, 600);
 }
 
 function autoBattleTurn() {
   if (!state.battle || state.battle.over) return;
-  if (state.battle.heroMp >= 5 && state.stats.int > state.stats.str) {
-    doBattleAction('magic');
-  } else {
-    doBattleAction('attack');
-  }
+  if (state.battle.heroMp >= 5 && state.stats.int > state.stats.str) doBattleAction('magic');
+  else doBattleAction('attack');
 }
 
 function winBattle() {
-  const b = state.battle;
-  const exp = b.enemy.exp;
-  const gold = b.enemy.gold;
-  addExp(exp);
-  addGold(gold);
-  state.stats.hp = b.heroHp;
-  state.stats.mp = b.heroMp;
-  
-  battleLog(`Victory! +${exp} EXP  +${gold} GOLD`);
-  spawnConfetti();
-  saveLocal();
-  syncToCloud();
-  updateLeaderboard();
-  
-  setTimeout(() => {
-    endBattle(false);
-    toast(`Battle Won! +${exp} EXP  +${gold} GOLD`);
-  }, 1500);
+  const b = state.battle; const exp = b.enemy.exp; const gold = b.enemy.gold;
+  addExp(exp); addGold(gold); state.stats.hp = b.heroHp; state.stats.mp = b.heroMp;
+  battleLog(`Victory! +${exp} EXP  +${gold} GOLD`); spawnConfetti();
+  saveLocal(); syncToCloud(); updateLeaderboard();
+  setTimeout(() => { endBattle(false); toast(`Battle Won! +${exp} EXP  +${gold} GOLD`); }, 1500);
 }
 
 function loseBattle() {
-  state.stats.hp = 1;
-  state.stats.mp = Math.max(0, state.stats.mp - 10);
-  battleLog('You were defeated...');
-  saveLocal();
-  syncToCloud();
-  
+  state.stats.hp = 1; state.stats.mp = Math.max(0, state.stats.mp - 10);
+  battleLog('You were defeated...'); saveLocal(); syncToCloud();
   setTimeout(() => {
     $('#battle-screen').innerHTML = `
-      <div class="gameover-screen">
-        <h1>DEFEATED</h1>
-        <p>You limp back to town...</p>
-        <button class="pixel-btn primary" onclick="endBattle(true)">CONTINUE</button>
-      </div>
-    `;
+      <div class="gameover-screen"><h1>DEFEATED</h1><p>You limp back to town...</p>
+      <button class="pixel-btn primary" onclick="endBattle(true)">CONTINUE</button></div>`;
   }, 1000);
 }
 
@@ -1503,21 +1267,14 @@ function endBattle(reload) {
   state.battle = null;
   if (reload) location.reload();
   else {
-    $('#battle-screen').classList.add('hidden');
-    $('#battle-start').classList.remove('hidden');
+    $('#battle-screen').classList.add('hidden'); $('#battle-start').classList.remove('hidden');
     $('#battle-screen').innerHTML = `
       <div class="battle-arena">
-        <div class="battle-hero">
-          <div id="battle-avatar"></div>
-          <div class="battle-name" id="battle-hero-name">HERO</div>
-          <div class="pixel-bar hp small"><div class="bar-track"><div id="battle-hp-bar" class="bar-fill"></div></div></div>
-        </div>
+        <div class="battle-hero"><div id="battle-avatar"></div><div class="battle-name" id="battle-hero-name">HERO</div>
+          <div class="pixel-bar hp small"><div class="bar-track"><div id="battle-hp-bar" class="bar-fill"></div></div></div></div>
         <div class="battle-vs">VS</div>
-        <div class="battle-enemy">
-          <div id="enemy-sprite"></div>
-          <div class="battle-name" id="enemy-name">SLIME</div>
-          <div class="pixel-bar hp small enemy"><div class="bar-track"><div id="enemy-hp-bar" class="bar-fill"></div></div></div>
-        </div>
+        <div class="battle-enemy"><div id="enemy-sprite"></div><div class="battle-name" id="enemy-name">SLIME</div>
+          <div class="pixel-bar hp small enemy"><div class="bar-track"><div id="enemy-hp-bar" class="bar-fill"></div></div></div></div>
       </div>
       <div id="battle-log" class="battle-log"></div>
       <div id="battle-actions" class="battle-actions">
@@ -1527,28 +1284,18 @@ function endBattle(reload) {
         <button class="battle-btn" data-action="item">🧪 ITEM</button>
         <button class="battle-btn" data-action="flee">👢 FLEE</button>
       </div>
-      <div class="auto-battle">
-        <label><input type="checkbox" id="auto-battle"> AUTO-BATTLE</label>
-      </div>
-    `;
-    // Rebind battle buttons
-    setTimeout(() => {
-      $$('.battle-btn').forEach(btn => {
-        btn.onclick = () => doBattleAction(btn.dataset.action);
-      });
-    }, 100);
+      <div class="auto-battle"><label><input type="checkbox" id="auto-battle"> AUTO-BATTLE</label></div>`;
+    setTimeout(() => { $$('.battle-btn').forEach(btn => { btn.onclick = () => doBattleAction(btn.dataset.action); }); }, 100);
   }
 }
 
 function spawnConfetti() {
   for (let i = 0; i < 20; i++) {
     const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = rand(0, 100) + 'vw';
+    c.className = 'confetti'; c.style.left = rand(0, 100) + 'vw';
     c.style.backgroundColor = ['#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff'][rand(0,4)];
     c.style.animationDelay = (i * 0.05) + 's';
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 2500);
+    document.body.appendChild(c); setTimeout(() => c.remove(), 2500);
   }
 }
 
@@ -1556,49 +1303,27 @@ function spawnConfetti() {
 
 function renderShop() {
   const grid = $('#cosmetic-shop');
-  if (!grid) return;
-  grid.innerHTML = '';
-  
+  if (!grid) return; grid.innerHTML = '';
   COSMETICS.forEach(item => {
     const owned = state.cosmetics.includes(item.id);
     const div = document.createElement('div');
     div.className = 'shop-item' + (owned ? ' owned' : '');
-    div.innerHTML = `
-      <div style="font-size:10px;color:var(--primary);">${item.name}</div>
-      <div class="item-price">${owned ? 'OWNED' : '◆ ' + item.price}</div>
-    `;
-    div.onclick = () => buyCosmetic(item);
-    grid.appendChild(div);
+    div.innerHTML = `<div style="font-size:10px;color:var(--primary);">${item.name}</div><div class="item-price">${owned ? 'OWNED' : '◆ ' + item.price}</div>`;
+    div.onclick = () => buyCosmetic(item); grid.appendChild(div);
   });
 }
 
 function buyCosmetic(item) {
   if (state.cosmetics.includes(item.id)) {
-    // Equip/unequip
-    if (state.equipped[item.type] === item.id) {
-      delete state.equipped[item.type];
-      toast(`Unequipped ${item.name}`);
-    } else {
-      state.equipped[item.type] = item.id;
-      toast(`Equipped ${item.name}`);
-    }
+    if (state.equipped[item.type] === item.id) { delete state.equipped[item.type]; toast(`Unequipped ${item.name}`); }
+    else { state.equipped[item.type] = item.id; toast(`Equipped ${item.name}`); }
   } else if (state.stats.gold >= item.price) {
-    state.stats.gold -= item.price;
-    state.cosmetics.push(item.id);
-    state.equipped[item.type] = item.id;
-    toast(`Purchased ${item.name}!`);
-    updateUI();
-  } else {
-    toast('Not enough gold!');
-  }
-  
-  if (state.character) {
-    state.character.equipped = state.equipped;
-  }
-  saveLocal();
-  syncToCloud();
-  renderShop();
-  renderAvatar($('#char-big-avatar'), state.character, 12);
+    state.stats.gold -= item.price; state.cosmetics.push(item.id); state.equipped[item.type] = item.id;
+    toast(`Purchased ${item.name}!`); updateUI();
+  } else { toast('Not enough gold!'); }
+  if (state.character) state.character.equipped = state.equipped;
+  saveLocal(); syncToCloud(); renderShop();
+  renderAvatar($('#char-big-avatar'), state.character, 20, 24, 6);
 }
 
 /* ================= LEADERBOARD ================= */
@@ -1607,55 +1332,34 @@ async function renderLeaderboard() {
   const tbody = $('#lb-body');
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
-  
   if (state.isGuest || !window.fb) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sign in to view global leaderboard</td></tr>';
-    return;
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sign in to view global leaderboard</td></tr>'; return;
   }
-  
   try {
     const { db, collection, query, orderBy, limit, getDocs } = window.fb;
     let field = 'level';
     if (state.lbFilter === 'quests') field = 'quests';
     if (state.lbFilter === 'gold') field = 'gold';
     if (state.lbFilter === 'streak') field = 'streak';
-    
     const q = query(collection(db, 'leaderboard'), orderBy(field, 'desc'), limit(50));
     const snap = await getDocs(q);
-    
-    tbody.innerHTML = '';
-    let rank = 1;
+    tbody.innerHTML = ''; let rank = 1;
     snap.forEach(doc => {
       const d = doc.data();
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="rank-${rank}">#${rank}</td>
-        <td>${d.username || 'Unknown'}</td>
-        <td>${d.level || 1}</td>
-        <td>${d[field] || 0}</td>
-      `;
-      tbody.appendChild(tr);
-      rank++;
+      tr.innerHTML = `<td class="rank-${rank}">#${rank}</td><td>${d.username || 'Unknown'}</td><td>${d.level || 1}</td><td>${d[field] || 0}</td>`;
+      tbody.appendChild(tr); rank++;
     });
-    
-    if (rank === 1) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data yet. Be the first!</td></tr>';
-    }
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Error loading leaderboard</td></tr>';
-  }
+    if (rank === 1) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data yet. Be the first!</td></tr>';
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Error loading leaderboard</td></tr>'; }
 }
 
 /* ================= INIT ================= */
 
 function init() {
   document.body.setAttribute('data-theme', state.theme);
-  bindEvents();
-  initAuth();
+  bindEvents(); initAuth();
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
