@@ -10,6 +10,7 @@
 <body>
   <div id="scanlines"></div>
   <div id="crt-curve"></div>
+  <div id="bg-layer"></div>
 
   <div id="app">
 
@@ -75,10 +76,6 @@
           <button class="theme-btn" data-theme="medieval">
             <span class="theme-name">MEDIEVAL</span>
             <span class="theme-desc">Swords. Magic. Quests.</span>
-          </button>
-          <button class="theme-btn" data-theme="pixel">
-            <span class="theme-name">PIXEL CLASSIC</span>
-            <span class="theme-desc">Retro. 8-Bit. Nostalgia.</span>
           </button>
         </div>
       </div>
@@ -207,11 +204,12 @@
         <div id="quest-list" class="quest-list"></div>
       </div>
 
-      <!-- PRACTICE: PRESET + CUSTOM -->
+      <!-- PRACTICE -->
       <div id="view-practice" class="main-view hidden">
         <div class="practice-tabs">
           <button class="practice-tab active" data-ptab="preset">PRESET TRIALS</button>
           <button class="practice-tab" data-ptab="custom">MY NOTES</button>
+          <button class="practice-tab" data-ptab="search">SEARCH TOPIC</button>
         </div>
 
         <div id="practice-preset">
@@ -249,6 +247,24 @@
           </div>
         </div>
 
+        <div id="practice-search" class="hidden">
+          <div class="custom-study-panel">
+            <label>SEARCH ANY TOPIC</label>
+            <input type="text" id="search-topic" class="pixel-input" placeholder="e.g. photosynthesis, French Revolution, calculus...">
+            <div class="search-options">
+              <label>QUESTION SOURCE</label>
+              <div class="option-row">
+                <button class="opt-btn active" data-api="both">BOTH</button>
+                <button class="opt-btn" data-api="quizapi">QUIZAPI</button>
+                <button class="opt-btn" data-api="wiki">WIKIPEDIA</button>
+              </div>
+            </div>
+            <button id="btn-search-topic" class="pixel-btn primary">SEARCH & GENERATE</button>
+            <p class="custom-note">QuizAPI for structured questions, Wikipedia for any topic.</p>
+            <p class="custom-note" style="color:var(--accent);">Note: QuizAPI requires free API key for best results.</p>
+          </div>
+        </div>
+
         <div id="practice-area" class="hidden">
           <div class="dialog-box"><p id="practice-question"></p></div>
           <div id="practice-options" class="practice-options"></div>
@@ -280,9 +296,6 @@
             <button class="battle-btn" data-action="defend">🛡️ DEFEND</button>
             <button class="battle-btn" data-action="item">🧪 ITEM</button>
             <button class="battle-btn" data-action="flee">👢 FLEE</button>
-          </div>
-          <div class="auto-battle">
-            <label><input type="checkbox" id="auto-battle"> AUTO-BATTLE</label>
           </div>
         </div>
         <div id="battle-start" class="battle-start">
@@ -356,6 +369,20 @@
   </div>
 
   <div id="overlay-toast" class="toast hidden"></div>
+
+  <!-- TIMER OVERLAY -->
+  <div id="overlay-timer" class="overlay hidden">
+    <div class="timer-box">
+      <h2>FOCUS QUEST</h2>
+      <p id="timer-quest-title">Study Session</p>
+      <div class="timer-display" id="timer-display">20:00</div>
+      <div class="timer-bar"><div id="timer-progress" class="timer-fill"></div></div>
+      <div class="timer-actions">
+        <button id="btn-timer-pause" class="pixel-btn secondary">PAUSE</button>
+        <button id="btn-timer-cancel" class="pixel-btn ghost">GIVE UP</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
