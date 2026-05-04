@@ -12,10 +12,63 @@
   <div id="crt-curve"></div>
 
   <div id="app">
-    <div id="view-onboarding" class="view">
-      <div class="panel onboarding-panel">
+
+    <!-- VIEW: LANDING / GOOGLE SIGN IN -->
+    <div id="view-landing" class="view">
+      <div class="panel landing-panel">
         <h1 class="logo">QUEST LOG</h1>
-        <p class="subtitle">Choose Your Realm</p>
+        <p class="subtitle">Gamified To-Do RPG</p>
+        <div class="landing-actions">
+          <button id="btn-google-signin" class="pixel-btn primary large">
+            <span class="btn-icon">G</span> SIGN IN WITH GOOGLE
+          </button>
+          <p class="or-divider">— OR —</p>
+          <button id="btn-email-toggle" class="pixel-btn secondary">USE EMAIL / PASSWORD</button>
+        </div>
+        
+        <div id="email-form" class="hidden" style="margin-top:20px;">
+          <div id="email-tabs">
+            <button class="auth-tab active" data-etab="login">LOGIN</button>
+            <button class="auth-tab" data-etab="register">REGISTER</button>
+          </div>
+          <div id="email-login" class="email-form-section">
+            <input type="email" id="e-login-email" placeholder="EMAIL" class="pixel-input">
+            <input type="password" id="e-login-pass" placeholder="PASSWORD" class="pixel-input">
+            <button id="btn-email-login" class="pixel-btn primary">LOGIN</button>
+          </div>
+          <div id="email-register" class="email-form-section hidden">
+            <input type="email" id="e-reg-email" placeholder="EMAIL" class="pixel-input">
+            <input type="password" id="e-reg-pass" placeholder="PASSWORD (6+ chars)" class="pixel-input">
+            <button id="btn-email-register" class="pixel-btn primary">CREATE ACCOUNT</button>
+          </div>
+        </div>
+        
+        <button id="btn-guest" class="pixel-btn ghost" style="margin-top:20px;">PLAY AS GUEST</button>
+        <p class="guest-note">Guest data is saved locally only.</p>
+      </div>
+    </div>
+
+    <!-- VIEW: USERNAME SETUP -->
+    <div id="view-username" class="view hidden">
+      <div class="panel username-panel">
+        <h2>CHOOSE YOUR HERO NAME</h2>
+        <p class="username-notice">
+          ⚠️ This name will appear on the <strong>GLOBAL LEADERBOARD</strong> for all players to see.
+        </p>
+        <p class="username-rules">
+          • 3–16 characters • Letters, numbers, underscores only<br>
+          • No offensive language • No impersonation names
+        </p>
+        <input type="text" id="username-input" class="pixel-input" placeholder="ENTER USERNAME" maxlength="16" autocomplete="off">
+        <p id="username-error" class="error-text"></p>
+        <button id="btn-save-username" class="pixel-btn primary">CONFIRM NAME</button>
+      </div>
+    </div>
+
+    <!-- VIEW: THEME SELECT -->
+    <div id="view-theme" class="view hidden">
+      <div class="panel theme-panel">
+        <h2>CHOOSE YOUR REALM</h2>
         <div class="theme-grid">
           <button class="theme-btn" data-theme="cyberpunk">
             <span class="theme-name">CYBERPUNK</span>
@@ -25,34 +78,16 @@
             <span class="theme-name">MEDIEVAL</span>
             <span class="theme-desc">Swords. Magic. Quests.</span>
           </button>
+          <button class="theme-btn" data-theme="pixel">
+            <span class="theme-name">PIXEL CLASSIC</span>
+            <span class="theme-desc">Retro. 8-Bit. Nostalgia.</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <div id="view-auth" class="view hidden">
-      <div class="panel auth-panel">
-        <h2>ENTER THE REALM</h2>
-        <div id="auth-tabs">
-          <button class="auth-tab active" data-tab="login">LOGIN</button>
-          <button class="auth-tab" data-tab="register">REGISTER</button>
-        </div>
-        <div id="auth-login" class="auth-form">
-          <input type="email" id="login-email" placeholder="EMAIL" class="pixel-input">
-          <input type="password" id="login-password" placeholder="PASSWORD" class="pixel-input">
-          <button id="btn-login" class="pixel-btn primary">LOGIN</button>
-          <button id="btn-google" class="pixel-btn secondary">GOOGLE SIGN-IN</button>
-        </div>
-        <div id="auth-register" class="auth-form hidden">
-          <input type="text" id="reg-username" placeholder="USERNAME" class="pixel-input" maxlength="16">
-          <input type="email" id="reg-email" placeholder="EMAIL" class="pixel-input">
-          <input type="password" id="reg-password" placeholder="PASSWORD" class="pixel-input">
-          <button id="btn-register" class="pixel-btn primary">CREATE HERO</button>
-        </div>
-        <button id="btn-guest" class="pixel-btn ghost">PLAY AS GUEST</button>
-      </div>
-    </div>
-
-    <div id="view-character-create" class="view hidden">
+    <!-- VIEW: CHARACTER CREATE -->
+    <div id="view-character" class="view hidden">
       <div class="panel char-panel">
         <h2>CREATE YOUR HERO</h2>
         <div class="char-layout">
@@ -84,6 +119,7 @@
       </div>
     </div>
 
+    <!-- VIEW: MAIN APP -->
     <div id="view-main" class="view hidden">
       <header id="top-bar">
         <div class="stat-group">
@@ -205,7 +241,7 @@
       </div>
 
       <div id="view-battle" class="main-view hidden">
-        <div id="battle-screen">
+        <div id="battle-screen" class="hidden">
           <div class="battle-arena">
             <div class="battle-hero">
               <div id="battle-avatar"></div>
@@ -234,6 +270,7 @@
         <div id="battle-start" class="battle-start">
           <p>NO ACTIVE ENCOUNTER</p>
           <p class="small">Complete quests to trigger battles!</p>
+          <button id="btn-start-battle" class="pixel-btn primary" style="margin-top:20px;">START BATTLE</button>
         </div>
       </div>
 
@@ -302,10 +339,11 @@
 
   <div id="overlay-toast" class="toast hidden"></div>
 
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBbm6xcaA11CR5zSCSZPcb24WLQoDZc9Cc",
@@ -327,7 +365,7 @@
     window.fbDb = db;
     window.fbGoogle = googleProvider;
     window.firebaseReady = true;
-    window.fb = { auth, db, googleProvider, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged };
+    window.fb = { auth, db, googleProvider, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, serverTimestamp, where, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged };
   </script>
 
   <script src="app.js"></script>
