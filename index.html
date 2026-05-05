@@ -10,7 +10,6 @@
 <body>
   <div id="scanlines"></div>
   <div id="crt-curve"></div>
-  <div id="bg-layer"></div>
 
   <div id="app">
 
@@ -76,6 +75,10 @@
           <button class="theme-btn" data-theme="medieval">
             <span class="theme-name">MEDIEVAL</span>
             <span class="theme-desc">Swords. Magic. Quests.</span>
+          </button>
+          <button class="theme-btn" data-theme="pixel">
+            <span class="theme-name">PIXEL CLASSIC</span>
+            <span class="theme-desc">Retro. 8-Bit. Nostalgia.</span>
           </button>
         </div>
       </div>
@@ -155,6 +158,7 @@
         <a href="#character" class="nav-btn" data-view="character">🎭 HERO</a>
       </nav>
 
+      <!-- DASHBOARD -->
       <div id="view-dashboard" class="main-view">
         <div class="dashboard-grid">
           <div class="panel">
@@ -188,10 +192,15 @@
         </div>
       </div>
 
+      <!-- QUESTS -->
       <div id="view-quests" class="main-view hidden">
         <div class="quest-controls">
           <input type="text" id="quest-input" class="pixel-input" placeholder="Enter a task...">
           <button id="btn-add-quest" class="pixel-btn primary">ADD QUEST</button>
+        </div>
+        <div class="timer-toggle">
+          <label><input type="checkbox" id="quest-timer-toggle"> ⏱️ TIMER QUEST</label>
+          <input type="number" id="quest-timer-min" class="pixel-input small" placeholder="MIN" min="1" max="120" value="25" style="width:60px;display:none;">
         </div>
         <div class="filter-tabs">
           <button class="filter-btn active" data-filter="all">ALL</button>
@@ -208,8 +217,8 @@
       <div id="view-practice" class="main-view hidden">
         <div class="practice-tabs">
           <button class="practice-tab active" data-ptab="preset">PRESET TRIALS</button>
-          <button class="practice-tab" data-ptab="custom">MY NOTES</button>
           <button class="practice-tab" data-ptab="search">SEARCH TOPIC</button>
+          <button class="practice-tab" data-ptab="custom">MY NOTES</button>
         </div>
 
         <div id="practice-preset">
@@ -236,6 +245,15 @@
           </div>
         </div>
 
+        <div id="practice-search" class="hidden">
+          <div class="search-panel">
+            <label>SEARCH ANY TOPIC</label>
+            <input type="text" id="search-topic" class="pixel-input" placeholder="e.g. Photosynthesis, World War 2, Calculus...">
+            <button id="btn-search-quiz" class="pixel-btn primary">GENERATE TRIAL</button>
+            <p class="search-note">Uses Wikipedia + QuizAPI for academic questions.</p>
+          </div>
+        </div>
+
         <div id="practice-custom" class="hidden">
           <div class="custom-study-panel">
             <label>PASTE YOUR NOTES</label>
@@ -243,25 +261,7 @@
             <label>OR UPLOAD A FILE</label>
             <input type="file" id="study-file" class="pixel-input" accept=".txt,.md">
             <button id="btn-generate-custom" class="pixel-btn primary">GENERATE TRIAL</button>
-            <p class="custom-note">The app will create fill-in-the-blank questions from your text.</p>
-          </div>
-        </div>
-
-        <div id="practice-search" class="hidden">
-          <div class="custom-study-panel">
-            <label>SEARCH ANY TOPIC</label>
-            <input type="text" id="search-topic" class="pixel-input" placeholder="e.g. photosynthesis, French Revolution, calculus...">
-            <div class="search-options">
-              <label>QUESTION SOURCE</label>
-              <div class="option-row">
-                <button class="opt-btn active" data-api="both">BOTH</button>
-                <button class="opt-btn" data-api="quizapi">QUIZAPI</button>
-                <button class="opt-btn" data-api="wiki">WIKIPEDIA</button>
-              </div>
-            </div>
-            <button id="btn-search-topic" class="pixel-btn primary">SEARCH & GENERATE</button>
-            <p class="custom-note">QuizAPI for structured questions, Wikipedia for any topic.</p>
-            <p class="custom-note" style="color:var(--accent);">Note: QuizAPI requires free API key for best results.</p>
+            <p class="custom-note">Creates fill-in-the-blank questions from your text.</p>
           </div>
         </div>
 
@@ -274,7 +274,9 @@
         </div>
       </div>
 
+      <!-- BATTLE -->
       <div id="view-battle" class="main-view hidden">
+        <div id="battle-bg-container" class="battle-bg-container"></div>
         <div id="battle-screen" class="hidden">
           <div class="battle-arena">
             <div class="battle-hero">
@@ -305,6 +307,7 @@
         </div>
       </div>
 
+      <!-- LEADERBOARD -->
       <div id="view-leaderboard" class="main-view hidden">
         <div class="lb-tabs">
           <button class="lb-tab active" data-lb="level">LEVEL</button>
@@ -325,6 +328,7 @@
         </div>
       </div>
 
+      <!-- CHARACTER -->
       <div id="view-character" class="main-view hidden">
         <div class="char-page">
           <div class="panel">
@@ -355,6 +359,7 @@
     </div>
   </div>
 
+  <!-- OVERLAYS -->
   <div id="overlay-levelup" class="overlay hidden">
     <div class="levelup-box">
       <h1>LEVEL UP!</h1>
@@ -373,17 +378,18 @@
   <!-- TIMER OVERLAY -->
   <div id="overlay-timer" class="overlay hidden">
     <div class="timer-box">
-      <h2>FOCUS QUEST</h2>
-      <p id="timer-quest-title">Study Session</p>
-      <div class="timer-display" id="timer-display">20:00</div>
+      <h2>⏱️ FOCUS QUEST</h2>
+      <p id="timer-quest-name">Studying...</p>
+      <div class="timer-display" id="timer-display">25:00</div>
       <div class="timer-bar"><div id="timer-progress" class="timer-fill"></div></div>
       <div class="timer-actions">
-        <button id="btn-timer-pause" class="pixel-btn secondary">PAUSE</button>
-        <button id="btn-timer-cancel" class="pixel-btn ghost">GIVE UP</button>
+        <button id="btn-timer-pause" class="pixel-btn">PAUSE</button>
+        <button id="btn-timer-giveup" class="pixel-btn secondary">GIVE UP</button>
       </div>
     </div>
   </div>
 
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
